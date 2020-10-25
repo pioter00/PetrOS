@@ -1,0 +1,6 @@
+/grub.cfg
+/isodir
+/kernel.bin
+/kernel.o
+/myos.iso
+/start.o

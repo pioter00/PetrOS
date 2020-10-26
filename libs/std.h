@@ -13,4 +13,5 @@ unsigned int num_len(long long num);
 void putchar(char c);
 void printf(char *output, ...);
 
+void sleep(unsigned int miliseconds);
 #endif

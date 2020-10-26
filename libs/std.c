@@ -173,3 +173,6 @@ void printf(char *output, ...)
   }
   va_end(tab);
 }
+void sleep(unsigned int miliseconds){
+
+}

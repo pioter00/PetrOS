@@ -30,3 +30,8 @@ void insert_at(char c, uint8_t color, unsigned x, unsigned y)
 {
 	*(main_terminal.buffer + y * WIDTH_T + x) = combine_text(c, color);
 }
+void delete_last(unsigned int size){
+	for (unsigned int i = 0; i < size; i++) {
+		insert_at(' ', main_terminal.color, --main_terminal.column, main_terminal.row);
+	}
+}

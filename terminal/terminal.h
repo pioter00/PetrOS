@@ -42,6 +42,6 @@ void terminal_initialize();
  
 void insert_at(char c, uint8_t color, unsigned x, unsigned y);
 
-void putchar(char c);
+void delete_last(unsigned int size);
 
 #endif

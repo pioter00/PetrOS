@@ -23,6 +23,8 @@ mov gs,ax
 lgdt [gdt_descr] 
 jmp .1 
 .1: 
+extern reroute_irqs 
+call reroute_irqs 
 push dword 0 
 push dword 0 
 push dword 0 

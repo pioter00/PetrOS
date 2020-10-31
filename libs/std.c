@@ -1,10 +1,11 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdint.h>
+
 #include "std.h"
 #include "../terminal/terminal.h"
-
-void putchar(char c) 
+struct terminal main_terminal;
+void putch(char c) 
 {
 
 	if (c == '\n') {
@@ -31,7 +32,7 @@ unsigned int strlen(char *txt){
 void printstring(char *txt)
 {
 	for(unsigned int i = 0; i < strlen(txt); i++){
-		putchar(*(txt + i));
+		putch(*(txt + i));
 	}
 }
 
@@ -64,7 +65,7 @@ int printint(int a)
 {
   if (a == 0)
   {
-    putchar('0');
+    putch('0');
     return 1;
   }
   int size = num_len(abs(a)), i;
@@ -74,7 +75,7 @@ int printint(int a)
     for(i=size-1;i>=0;i--)
     {
       x = a / (int)power10(i) % 10 + '0';
-      putchar(x);
+      putch(x);
     }
   }
   else
@@ -82,11 +83,11 @@ int printint(int a)
     a = abs(a);
     for(i=size;i>=0;i--)
     {
-      if (i == size) putchar('-');
+      if (i == size) putch('-');
       else
       {
         x = a / (int)power10(i) % 10 + '0';
-        putchar(x);
+        putch(x);
       }
     }
     size++;
@@ -109,8 +110,8 @@ int printdouble(double a)
     for(i=size-1;i>=0;i--)
     {
       x = (long)b / (long)power10(i) % (long)10 + '0';
-      putchar(x);
-      if (i == 5) putchar('.');
+      putch(x);
+      if (i == 5) putch('.');
     }
     size++;
   }
@@ -119,19 +120,19 @@ int printdouble(double a)
     b = llabs(b);
     for(i=size;i>=0;i--)
     {
-      if (i == size) putchar('-');
+      if (i == size) putch('-');
       else
       {
         x = (long)b / (long)power10(i) % (long)10 + '0';
-        putchar(x);
-        if (i == 5) putchar('.');
+        putch(x);
+        if (i == 5) putch('.');
       }
     }
     size += 2;
   }
   return size;
 }
-void printf(char *output, ...)
+void print(char *output, ...)
 {
   int counter = 0, i = 0, size = strlen(output);
   va_list tab;
@@ -162,17 +163,14 @@ void printf(char *output, ...)
         i += 2;
       }
       else {
-        putchar(*(output + i));
+        putch(*(output + i));
         i++;
       }
     }
     else {
-      putchar(*(output + i));
+      putch(*(output + i));
       i++;
     }
   }
   va_end(tab);
-}
-void sleep(unsigned int miliseconds){
-
 }

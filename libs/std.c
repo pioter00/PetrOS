@@ -4,23 +4,31 @@
 
 #include "std.h"
 #include "../terminal/terminal.h"
-struct terminal main_terminal;
 void putch(char c) 
 {
 
 	if (c == '\n') {
 		main_terminal.row++;
-		main_terminal.column = -1;
+		main_terminal.column = 0;
 	}
 	else if (c == '\t') {
 		main_terminal.column += 4;
 	}
-	else insert_at(c, main_terminal.color, main_terminal.column, main_terminal.row);
-	if (++ main_terminal.column == WIDTH_T) {
-		main_terminal.column = 0;
-		if (++main_terminal.row == HEIGHT_T)
-			main_terminal.row = 0;
-	}
+	else {
+    insert_at(c, main_terminal.column, main_terminal.row);
+    main_terminal.column++;
+  } 
+	if (main_terminal.column == WIDTH_T){
+    main_terminal.column = 0;
+    main_terminal.row++;
+  } 
+	if (main_terminal.row == HEIGHT_T){
+    scroll();
+    main_terminal.row = HEIGHT_T - 1;
+    for (int i = 0; i < WIDTH_T; i++) {
+      insert_at(' ', main_terminal.column + i, main_terminal.row);
+    }
+  } 
 }
 unsigned int strlen(char *txt){
 	unsigned int i = 0;

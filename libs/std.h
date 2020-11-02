@@ -10,8 +10,8 @@ int abs(int a);
 long long llabs(long long a);
 unsigned int num_len(long long num);
 
-void putchar(char c);
-void printf(char *output, ...);
+void putch(char c);
+void print(char *output, ...);
 
 void sleep(unsigned int seconds);
 #endif

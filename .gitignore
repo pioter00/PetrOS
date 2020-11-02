@@ -2,7 +2,9 @@
 /isodir
 /kernel.bin
 /kernel.o
-/myos.iso
+/bochsrc.txt
 /start.o
+/PetrOS.iso
+/libs/std.o
 /terminal/terminal.o
-/terminal/std.o
+/irqroute.o

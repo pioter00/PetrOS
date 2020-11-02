@@ -6,15 +6,18 @@
 
 #define WIDTH_T 80
 #define HEIGHT_T 25
+#define SCREEN_B (80 * 17)
 
 struct terminal {
     size_t row;
     size_t column;
-    uint8_t	color;
+    uint8_t	bgcolor;
+	uint8_t	fncolor;
+	uint8_t	color;
     uint16_t *buffer;
 };
 
-extern struct terminal main_terminal;
+struct terminal main_terminal;
 
 enum colors {
 	BLACK,
@@ -40,8 +43,13 @@ uint16_t combine_text(unsigned char uc, uint8_t color);
 
 void terminal_initialize();
  
-void insert_at(char c, uint8_t color, unsigned x, unsigned y);
+void insert_at(char c, unsigned x, unsigned y);
 
 void delete_last(unsigned int size);
+
+void set_bg_col(enum colors col);
+void set_fn_col(enum colors col);
+
+void scroll();
 
 #endif

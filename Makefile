@@ -11,7 +11,7 @@ comp:
 	gcc kernel.c -m32 -O2 -fno-pie -fno-builtin -c -o kernel.o
 	ld -Tlinker.ld -o $(OUTFILE) $(OBJS)
 	cp kernel.bin isodir/boot/kernel.bin
-	grub-mkrescue -o myos.iso isodir
-
+	grub-mkrescue -o PetrOS.iso isodir
+	
 .asm.o: 
 	nasm $*.asm -f elf32 -o $*.o

@@ -2,8 +2,21 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "std.h"
-#include "../terminal/terminal.h"
+#include "../include/std.h"
+#include "../include/terminal.h"
+
+unsigned char inportb (unsigned short _port)
+{
+    unsigned char rv;
+    __asm__ __volatile__ ("inb %1, %0" : "=a" (rv) : "dN" (_port));
+    return rv;
+}
+
+void outportb (unsigned short _port, unsigned char _data)
+{
+    __asm__ __volatile__ ("outb %1, %0" : : "dN" (_port), "a" (_data));
+}
+
 void putch(char c) 
 {
 
@@ -13,6 +26,9 @@ void putch(char c)
 	}
 	else if (c == '\t') {
 		main_terminal.column += 4;
+	}
+  else if (c == 8 && main_terminal.column > 0) {
+		--main_terminal.column;
 	}
 	else {
     insert_at(c, main_terminal.column, main_terminal.row);
@@ -28,8 +44,19 @@ void putch(char c)
     for (int i = 0; i < WIDTH_T; i++) {
       insert_at(' ', main_terminal.column + i, main_terminal.row);
     }
-  } 
+  }
+  move_csr(); 
 }
+
+void move_csr()
+{
+    unsigned temp = main_terminal.row * 80 + main_terminal.column;
+    outportb(0x3D4, 14);
+    outportb(0x3D5, temp >> 8);
+    outportb(0x3D4, 15);
+    outportb(0x3D5, temp);
+}
+
 unsigned int strlen(char *txt){
 	unsigned int i = 0;
 	while (*txt++){

@@ -1,6 +1,6 @@
 #include <stddef.h>
 #include <stdint.h>
-#include "terminal.h"
+#include "../include/terminal.h"
 
 uint8_t combine_colors(enum colors fg, enum colors bg) 
 {

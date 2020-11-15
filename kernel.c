@@ -1,9 +1,10 @@
 #include <stddef.h>
 #include <stdint.h>
-#include "libs/std.h"
-#include "libs/asm.h"
-#include "libs/timer.h"
-#include "terminal/terminal.h"
+#include "include/std.h"
+#include "include/timer.h"
+#include "include/terminal.h"
+
+char *user = "pjoter";
 
 void start_kernel(void) 
 {
@@ -28,11 +29,15 @@ void start_kernel(void)
 	for(int i = 0; i < WIDTH_T; i++){
 		print("=");
 	}
-	set_fn_col(LIGHT_GREY);
 	print("\n");
-	set_fn_col(GREEN);
-	print("command");
+
+	set_fn_col(BLUE);
+	print("%s", user);
 	set_fn_col(LIGHT_GREY);
-	print(">\n");
+	print("$");
+	set_fn_col(GREEN);
+	print("home");
+	set_fn_col(LIGHT_GREY);
+	print("> ");
 	
 }

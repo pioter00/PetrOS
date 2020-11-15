@@ -1,3 +1,4 @@
+[SECTION .text]
 [BITS 32] 
 
 GLOBAL reroute_irqs 

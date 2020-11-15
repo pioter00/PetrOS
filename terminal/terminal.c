@@ -23,7 +23,7 @@ void terminal_initialize(void)
     main_terminal.column = 0;
     main_terminal.buffer = (uint16_t*) 0xB8000;
 	set_bg_col(BLACK);
-	set_fn_col(WHITE);
+	set_fn_col(LIGHT_GREY);
 	main_terminal.color = combine_colors(main_terminal.fncolor, main_terminal.bgcolor);
 }
  

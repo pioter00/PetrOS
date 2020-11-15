@@ -20,7 +20,9 @@ mov ds,ax
 mov es,ax 
 mov fs,ax 
 mov gs,ax 
-lgdt [gdt_descr] 
+lgdt [gdt_descr]
+lidt [idt_descr]
+
 jmp .1 
 .1: 
 extern reroute_irqs 
@@ -50,3 +52,11 @@ dd 0x0000FFFF,0x00CF9A00
 dd 0x0000FFFF,0x00CF9200 
 dd 0,0 
 times 254 dd 0,0
+
+idt_descr: 
+dw 256*8-1 
+dd idt 
+
+GLOBAL idt 
+idt: 
+times 256 dd 0,0

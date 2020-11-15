@@ -1,7 +1,8 @@
 #include <stddef.h>
 #include <stdint.h>
-
 #include "libs/std.h"
+#include "libs/asm.h"
+#include "libs/timer.h"
 #include "terminal/terminal.h"
 
 void start_kernel(void) 
@@ -27,12 +28,11 @@ void start_kernel(void)
 	for(int i = 0; i < WIDTH_T; i++){
 		print("=");
 	}
-	set_fn_col(WHITE);
+	set_fn_col(LIGHT_GREY);
 	print("\n");
-	for (int i = 1; i <= 90; i++)
-	{
-		print("%d\n", i);
-	}
+	set_fn_col(GREEN);
+	print("command");
+	set_fn_col(LIGHT_GREY);
+	print(">\n");
 	
-
 }

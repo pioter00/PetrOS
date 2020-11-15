@@ -3,8 +3,10 @@
 /kernel.bin
 /kernel.o
 /bochsrc.txt
+/irqroute.o
 /start.o
 /PetrOS.iso
 /libs/std.o
+/libs/timer.o
 /terminal/terminal.o
-/irqroute.o
+

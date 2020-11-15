@@ -64,6 +64,13 @@ unsigned int strlen(char *txt){
 	}
 	return i;
 }
+void *mem_set(void *dest, char c, size_t size)
+{
+    uint8_t *temp = (uint8_t *)dest;
+    while(size--) 
+      *temp++ = c;
+    return dest;
+}
 void printstring(char *txt)
 {
 	for(unsigned int i = 0; i < strlen(txt); i++){

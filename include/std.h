@@ -12,6 +12,7 @@ long long power(int base);
 int abs(int a);
 long long llabs(long long a);
 unsigned int num_len(long long num);
+void *mem_set(void *dest, char c, size_t size);
 
 void putch(char c);
 void move_csr();

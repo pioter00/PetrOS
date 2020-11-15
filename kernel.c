@@ -1,13 +1,18 @@
 #include <stddef.h>
 #include <stdint.h>
+#include "include/gdt.h"
+#include "include/idt.h"
 #include "include/std.h"
 #include "include/timer.h"
 #include "include/terminal.h"
 
+
 char *user = "pjoter";
 
-void start_kernel(void) 
+void main() 
 {
+	gdt_install();
+	idt_install();
 	terminal_initialize();
 	print("\tPetrOS 0.01\n\n");
 	set_fn_col(DARK_GREY);

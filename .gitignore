@@ -1,5 +1,6 @@
 /grub.cfg
 /isodir
+/libs/gdt.o
 /kernel.bin
 /kernel.o
 /bochsrc.txt

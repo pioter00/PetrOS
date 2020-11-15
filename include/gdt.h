@@ -1,4 +1,8 @@
+#ifndef GDT_H
+#define GDT_H
+
 #include <stdint.h>
+
 struct gdt_entry
 {
     uint16_t limit_low;
@@ -8,7 +12,6 @@ struct gdt_entry
     uint8_t granularity;
     uint8_t base_high;
 } __attribute__((packed));
-
 
 struct gdt_ptr
 {
@@ -20,4 +23,6 @@ struct gdt_ptr
 struct gdt_entry gdt[3];
 struct gdt_ptr gp;
 
-extern void gdt_flush();
+void gdt_set_gate(int num, unsigned long base, unsigned long limit, unsigned char access, unsigned char gran);
+void gdt_install();
+#endif

@@ -14,3 +14,6 @@ comp:
 	cp kernel.bin isodir/boot/kernel.bin
 	grub-mkrescue -o PetrOS.iso isodir
 	qemu-system-i386 -cdrom PetrOS.iso
+
+clean:
+	find . -type f -name '*.o' -delete

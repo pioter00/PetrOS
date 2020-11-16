@@ -46,7 +46,6 @@ unsigned char kbdus[128] =
 void keyboard_handler(struct regs *r)
 {
     unsigned char scancode = inportb(0x60);
-    print("%d", scancode);
     if (scancode & 0x80)
     {
 

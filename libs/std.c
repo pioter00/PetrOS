@@ -27,8 +27,8 @@ void putch(char c)
 	else if (c == '\t') {
 		main_terminal.column += 4;
 	}
-  else if (c == 8 && main_terminal.column > 0) {
-		--main_terminal.column;
+  else if (c == '\b' && main_terminal.column > 0) {
+    insert_at(' ', --main_terminal.column, main_terminal.row);
 	}
 	else {
     insert_at(c, main_terminal.column, main_terminal.row);

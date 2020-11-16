@@ -2,7 +2,7 @@
 #include "../include/std.h"
 #include <stdint.h>
 
-void idt_set_gate(unsigned char num, unsigned long base, unsigned short sel, unsigned char flags)
+void idt_set_gate(uint8_t num, uint64_t base, uint16_t sel, uint8_t flags)
 {
     idt[num].base_lo = (base & 0xFFFF);
     idt[num].base_hi = (base >> 16) & 0xFFFF;

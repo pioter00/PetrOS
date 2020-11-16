@@ -22,6 +22,6 @@ struct idt_entry idt[256];
 struct idt_ptr idtp;
 
 extern void idt_load();
-void idt_set_gate(uint8_t num, unsigned long base, uint16_t sel, uint8_t flags);
+void idt_set_gate(uint8_t num, uint64_t base, uint16_t sel, uint8_t flags);
 void idt_install();
 #endif

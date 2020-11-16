@@ -43,14 +43,11 @@ unsigned char kbdus[128] =
     0,	/* F12 Key */
     0,	/* All other keys are undefined */
 };
-/* Handles the keyboard interrupt */
-void keyboard_handler()
+void keyboard_handler(struct regs *r)
 {
     unsigned char scancode = inportb(0x60);
     putch(kbdus[scancode]);
 }
-
-/* Installs the keyboard handler into IRQ1 */
 void keyboard_install()
 {  
   irq_install_handler(1, keyboard_handler);

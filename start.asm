@@ -127,7 +127,7 @@ isr5:
 isr6:
     cli
     push byte 0
-    push byte 0 ;6 should be 
+    push byte 6 
     jmp isr_common_stub
 
 ;  7: Coprocessor Not Available Exception

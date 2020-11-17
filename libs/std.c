@@ -30,6 +30,7 @@ void putch(char c)
   else if (c == '\b' && main_terminal.column == 0) {
     main_terminal.row--;
     main_terminal.column = 79;
+    insert_at(' ', 79, main_terminal.row);
 	}
   else if (c == '\b' && main_terminal.column > 0) {
     insert_at(' ', --main_terminal.column, main_terminal.row);

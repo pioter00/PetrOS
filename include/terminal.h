@@ -16,7 +16,7 @@ struct terminal {
 	uint8_t	color;
     uint16_t *buffer;
 
-	uint8_t caps_flag;
+	uint8_t nl_flag;
 };
 
 struct terminal main_terminal;
@@ -47,14 +47,10 @@ void terminal_initialize();
  
 void insert_at(char c, unsigned x, unsigned y);
 
-void delete_last(unsigned int size);
 
 void set_bg_col(enum colors col);
 void set_fn_col(enum colors col);
 
 void scroll();
-
-void kbd_putchar(char c);
-void kbd_set(uint8_t code);
 
 #endif

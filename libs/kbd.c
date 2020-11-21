@@ -1,4 +1,5 @@
 #include "../include/keyboard.h"
+#include "../include/terminal.h"
 #include "../include/isr.h"
 #include "../include/irq.h"
 #include "../include/std.h"
@@ -46,13 +47,14 @@ unsigned char kbdus[128] =
 void keyboard_handler(struct regs *r)
 {
     unsigned char scancode = inportb(0x60);
+    kbd_set(scancode);
     if (scancode & 0x80)
     {
 
     }
     else
     {
-        putch(kbdus[scancode]);
+        kbd_putchar(kbdus[scancode]);
     }
 }
 

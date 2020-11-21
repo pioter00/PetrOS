@@ -8,19 +8,7 @@
 #include "include/std.h"
 #include "include/timer.h"
 #include "include/terminal.h"
-
-
-char *user = "pjoter";
-
-#define CMD_LINE\
-	set_fn_col(GREEN);\
-	print("%s", user);\
-	set_fn_col(LIGHT_GREY);\
-	print("$");\
-	set_fn_col(BLUE);\
-	print("home");\
-	set_fn_col(LIGHT_GREY);\
-	print("> ");\
+#include "include/macros.h"
 
 void main() 
 {
@@ -30,7 +18,7 @@ void main()
 	irq_install();
 	terminal_initialize();
 	keyboard_install();
-    __asm__ __volatile__ ("sti");
+	ENABLE_IRQ
 	print("\tPetrOS 0.01\n\n");
 	set_fn_col(DARK_GREY);
 	for(int i = 0; i < WIDTH_T; i++){

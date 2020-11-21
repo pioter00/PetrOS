@@ -34,6 +34,7 @@ void putch(char c)
 	}
   else if (c == '\b' && main_terminal.column > 0) {
     insert_at(' ', --main_terminal.column, main_terminal.row);
+    set_fn_col(LIGHT_GREY);
 	}
   else if (c == 0){
 

@@ -89,11 +89,17 @@ void keyboard_handler(struct regs *r)
           putch('\n');
           move_csr(); 
         }
-        else kbd_putchar(shift_key_map[scancode]);
+        else {
+          kbd_putchar(shift_key_map[scancode]);
+          if(shift_key_map[scancode]) keyboard.buffer[keyboard.buf_index++] = shift_key_map[scancode];
+
+        }
         
       }
-      else
+      else {
         kbd_putchar(key_map[scancode]);
+        if(shift_key_map[scancode]) keyboard.buffer[keyboard.buf_index++] = key_map[scancode];
+      }
     }
 }
 
@@ -117,7 +123,6 @@ void kbd_putchar(char c){
 		main_terminal.row++;
 		main_terminal.column = 0;
     main_terminal.nl_flag = 1;
-    read_buf();
     print("%s\n", keyboard.buffer);
 		CMD_LINE
 	}
@@ -164,18 +169,3 @@ void kbd_set(uint8_t code){
 	else if (code == 170 || code == 182) keyboard.shift_flag = 0;
 }
 
-void read_buf() {
-  int temp = main_terminal.row * WIDTH_T + main_terminal.column, size = 0, i = 0;
-  unsigned char *t = (unsigned char *)main_terminal.buffer - 1;
-  while(*(t + temp - size) != 0){
-    print("%d ", *(t + temp - size));
-    size+=2;
-  }
-  while (size)
-  {
-    keyboard.buffer[i] = *(main_terminal.buffer + temp - size);
-    size-=2;
-    i++;
-  }
-  keyboard.buf_index = i;
-}

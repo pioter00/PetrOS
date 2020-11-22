@@ -37,7 +37,7 @@ void insert_at(char c, unsigned x, unsigned y)
 }
 
 void scroll(){
-	for (int i = 0; i < 640; i++){
+	for (int i = 0; i <= 640; i++){
 		*(main_terminal.buffer + SCREEN_B - WIDTH_T + i)  = *(main_terminal.buffer + SCREEN_B + i);
 	}
 	

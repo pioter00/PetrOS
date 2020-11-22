@@ -4,6 +4,7 @@
 
 #include "../include/std.h"
 #include "../include/terminal.h"
+#include "../include/keyboard.h"
 
 unsigned char inportb (unsigned short _port)
 {
@@ -37,7 +38,8 @@ void putch(char c)
     set_fn_col(LIGHT_GREY);
 	}
   else if (c == 0){
-
+    print("%c", '0');
+    insert_at(0, main_terminal.column, main_terminal.row);
   }
 	else {
     insert_at(c, main_terminal.column, main_terminal.row);
@@ -68,9 +70,7 @@ void move_csr()
 
 unsigned int strlen(char *txt){
 	unsigned int i = 0;
-	while (*txt++){
-		i++;
-	}
+	while (*txt++) i++;
 	return i;
 }
 void *mem_set(void *dest, char c, size_t size)
@@ -201,6 +201,12 @@ void print(char *output, ...)
         printstring(s);
         i += 2;
       }
+      else if(*(output + i + 1) == 'c')
+      {
+        a = va_arg(tab, int);
+        putch(a);
+        i += 2;
+      }
       else if(*(output + i + 1) == 'd')
       {
         a = va_arg(tab, int);
@@ -224,4 +230,8 @@ void print(char *output, ...)
     }
   }
   va_end(tab);
+}
+
+char getch() {
+  return keyboard.last;
 }

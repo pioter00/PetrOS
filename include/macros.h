@@ -9,7 +9,9 @@
 	set_fn_col(BLUE);\
 	print("home");\
 	set_fn_col(LIGHT_GREY);\
-	print("> ");\
+	print(">");\
+	insert_at(0, main_terminal.column, main_terminal.row);\
+    main_terminal.column++;\
 
 #define CMD_LINE_LEN 13
 #define ENABLE_IRQ __asm__ __volatile__ ("sti");

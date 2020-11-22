@@ -10,6 +10,8 @@
 #include "include/terminal.h"
 #include "include/macros.h"
 
+//bugs: scrolling
+
 void main() 
 {
 	gdt_install();

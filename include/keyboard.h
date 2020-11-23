@@ -25,7 +25,7 @@ struct keyboard_t {
 void kbd_putchar(char c);
 void kbd_set(uint8_t code);
 void buf_putch(char c);
-void buf_read();
+
 
 
 #endif

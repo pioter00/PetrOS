@@ -239,7 +239,8 @@ char getch() {
 	for (int i = 0; i < keyboard.buffer.size; i++){
 		keyboard.buffer.txt[i] = keyboard.buffer.txt[i + 1];
 	}
-	if (keyboard.buffer.size--);
+	keyboard.buffer.size--;
+	keyboard.buffer.index = 0;
 	return x;
 }
 void getstr(char * dest) {

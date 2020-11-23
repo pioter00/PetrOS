@@ -104,25 +104,25 @@ void keyboard_handler(struct regs *r)
 
 char buf[KBD_BUF] = {0};
 
-void keyboard_install()
-{
-  keyboard.caps_flag = 0;
-  keyboard.shift_flag = 0;
-  keyboard.ctrl_flag = 0;
-  keyboard.alt_flag = 0;
-  keyboard.read_flag = 0;
-  keyboard.buffer.txt = buf;
-  keyboard.buffer.index = 0;
-  keyboard.buffer.size = 0;
-  outportb(0x60, 0);
-  irq_install_handler(1, keyboard_handler);
+void keyboard_install() {
+	keyboard.caps_flag = 0;
+	keyboard.shift_flag = 0;
+	keyboard.ctrl_flag = 0;
+	keyboard.alt_flag = 0;
+	keyboard.read_flag = 0;
+	keyboard.buffer.txt = buf;
+	keyboard.buffer.index = 0;
+	keyboard.buffer.size = 0;
+	outportb(0x60, 0);
+	irq_install_handler(1, keyboard_handler);
 }
 
 void kbd_putchar(char c){
 	if (c == '\n') {
 		main_terminal.row++;
 		main_terminal.column = 0;
-    main_terminal.nl_flag = 1;
+    	main_terminal.nl_flag = 1;
+    	// print("read: %d\n", keyboard.buffer.is_readable);
 	}
 	else if (c == '\t') {
 		main_terminal.column += 4;

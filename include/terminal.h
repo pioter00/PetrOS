@@ -3,10 +3,10 @@
 
 #include <stddef.h>
 #include <stdint.h>
-
 #define WIDTH_T 80
 #define HEIGHT_T 25
-#define SCREEN_B (80 * 17)
+#define SCROLL_L 22
+#define SCREEN_B (WIDTH_T * (HEIGHT_T - SCROLL_L))
 
 struct terminal {
     size_t row;
@@ -17,9 +17,7 @@ struct terminal {
     uint16_t *buffer;
 
 	uint8_t nl_flag;
-};
-
-struct terminal main_terminal;
+} main_terminal;
 
 enum colors {
 	BLACK,

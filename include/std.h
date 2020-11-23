@@ -16,7 +16,14 @@ void * mem_set(void *dest, char c, size_t size);
 
 void putch(char c);
 void move_csr();
-void print(char *output, ...);
+void print(char *format, ...);
+
 char getch();
 void getstr(char * str);
+void getstrn(char * str, size_t n);
+int scan(char *format, ...);
+
+int isdigit(char c);
+int isspace(char c);
+
 #endif

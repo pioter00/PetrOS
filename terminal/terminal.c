@@ -23,7 +23,7 @@ void terminal_initialize(void)
 {
     main_terminal.row = 0;
     main_terminal.column = 0;
-    main_terminal.buffer = (uint16_t*) 0xB8000;
+    main_terminal.buffer = (uint16_t*)0xB8000;
 	main_terminal.nl_flag = 1;
 	set_bg_col(BLACK);
 	set_fn_col(LIGHT_GREY);
@@ -37,7 +37,7 @@ void insert_at(char c, unsigned x, unsigned y)
 }
 
 void scroll(){
-	for (int i = 0; i <= 640; i++){
+	for (int i = 0; i <= SCROLL_L * WIDTH_T; i++){
 		*(main_terminal.buffer + SCREEN_B - WIDTH_T + i)  = *(main_terminal.buffer + SCREEN_B + i);
 	}
 	

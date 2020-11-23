@@ -61,13 +61,12 @@ void putch(char c)
 	move_csr(); 
 }
 
-void move_csr()
-{
-		unsigned temp = main_terminal.row * 80 + main_terminal.column;
-		outportb(0x3D4, 14);
-		outportb(0x3D5, temp >> 8);
-		outportb(0x3D4, 15);
-		outportb(0x3D5, temp);
+void move_csr() {
+	unsigned temp = main_terminal.row * 80 + main_terminal.column;
+	outportb(0x3D4, 14);
+	outportb(0x3D5, temp >> 8);
+	outportb(0x3D4, 15);
+	outportb(0x3D5, temp);
 }
 
 unsigned int strlen(char *txt){
@@ -234,7 +233,7 @@ void print(char *output, ...)
 	va_end(tab);
 }
 
-char getch() {
+char buf_getch() {
 	char x = keyboard.buffer.txt[0];
 	for (int i = 0; i < keyboard.buffer.size; i++){
 		keyboard.buffer.txt[i] = keyboard.buffer.txt[i + 1];
@@ -243,17 +242,146 @@ char getch() {
 	keyboard.buffer.index = 0;
 	return x;
 }
-void getstr(char * dest) {
+void getstr(char * str) {
 	outportb(0x60, 0);
 	while (inportb(0x60) != 28);
 	// print("%s\n", keyboard.buffer.txt);
 	for (int i = 0; ; i++)
 	{
-		char c = getch();
-		if (c != '\n' && c != 0) *(dest + i) = c;
+		char c = buf_getch();
+		if (c != '\n' && c != 0 && c != ' ') *(str + i) = c;
 		else {
-			*(dest + i) = '\0';
+			*(str + i) = '\0';
 			break;
 		}
 	}	
+}
+void getstrn(char * str, size_t n){
+	outportb(0x60, 0);
+	while (inportb(0x60) != 28);
+	int i;
+	for (i = 0; i < n; i++)
+	{
+		char c = buf_getch();
+		if (c != '\n' && c != 0) *(str + i) = c;
+		else {
+			*(str + i) = '\0';
+			break;
+		}
+	}
+	if (i == n && n > 1) *(str + i) = '\0';	
+}
+char getch(){
+	outportb(0x60, 0);
+	while (inportb(0x60) != 28);
+	char ch = buf_getch();
+	return ch;
+}
+int getint(int *var)
+{
+  *var = 0;
+  int first = 0, sign = 1, flag = 1, res = 1;
+  char c = getch();
+  while (1)
+  {
+    if(c == '-' && first == 0) sign = -1;
+    else
+    {
+      if(isdigit(c) != 0 && flag == 1)
+      {
+        *var += c - '0';
+      }
+      if(isdigit(c) == 0 && c != '-' && flag == 1)
+      {
+        if (first == 0) res = 0;
+        flag = 0;
+      }
+    }
+    first = 1;
+    c = getch();
+    if (isspace(c)) break;
+    else if (isdigit(c) != 0 && flag == 1) *var *= 10;
+  }
+  *var *= sign;
+  return res;
+}
+int getdouble(double *var)
+{
+  *var = 0;
+  int flag = 1, first = 0, sign = 1, point = 0, pos = 0, res = 1;
+  char c = getch();
+  while (1)
+  {
+    if(c == '-' && first == 0) sign = -1;
+    else
+    {
+      if(isdigit(c) != 0 && flag == 1 && point <= 1) *var += c - '0';
+      if(isdigit(c) != 0 && flag == 1 && point == 1) pos++;
+      if(isdigit(c) == 0 && c == '.')
+      {
+        point++;
+        if (point > 1) flag = 0;
+      }
+      if(isdigit(c) == 0 && c != '-' && c != '.' && flag == 1)
+      {
+        if (first == 0) res = 0;
+        flag = 0;
+      }
+    }
+    first = 1;
+    c = getch();
+    if (isspace(c)) break;
+    else if (isdigit(c) != 0 && point <= 1 && flag == 1) *var *= 10;
+  }
+
+  *var *= sign;
+  *var /= power10(pos);
+  return res;
+}
+
+int scan(char *input, ...)
+{
+	int counter = 0, i = 0, size = strlen(input);
+	va_list tab;
+	va_start(tab, input);
+	int *a = 0;
+	double *b = 0;
+	char *c;
+	for (i = 0; i < size; ) {
+		if(*(input + i) == '%' && i < size - 1)
+		{
+			if(*(input + i + 1) == 'd')
+			{
+				a = va_arg(tab, int*);
+				counter += getint(a);
+				i += 2;
+			}
+			else if(*(input + i + 1) == 'f')
+			{
+				b = va_arg(tab, double*);
+				counter += getdouble(b);
+				i += 2;
+			}
+			else if(*(input + i + 1) == 's')
+			{
+				c = va_arg(tab, char*);
+				getstr(c);
+				counter++;
+				i += 2;
+			}
+			else i++;
+		}
+		else i++;
+	}
+	va_end(tab);
+	return counter;
+}
+
+int isdigit(char c) {
+	if (c >= '0' && c <= '9') return 1;
+	return 0;
+}
+int isspace(char c){
+	if (c == ' ' || c <= '\n' || c == '\t') return 1;
+	return 0;
 }

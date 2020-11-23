@@ -10,7 +10,7 @@
 #include "include/terminal.h"
 #include "include/macros.h"
 
-//bugs: scrolling
+
 char line[256] = {0};
 void main() 
 {
@@ -42,10 +42,17 @@ void main()
 	// 	print("=");
 	// }
 	// print("\n");
+	char c;
+	char c1;
+	char c2;
 	while (1)
 	{
 		CMD_LINE
 		getstr(line);
-		print("%s\n", line);
+		print("Command '%s' not found.\n", line);
+		// c = getch();
+		// c1 = getch();
+		// c2 = getch();
+		// print("%c%c%c\n", c, c1, c2);
 	}
 }

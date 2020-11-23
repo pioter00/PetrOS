@@ -91,19 +91,18 @@ void keyboard_handler(struct regs *r)
         }
         else {
           kbd_putchar(shift_key_map[scancode]);
-          if(shift_key_map[scancode]) keyboard.buffer[keyboard.buf_index++] = shift_key_map[scancode];
-
+          if (shift_key_map[scancode]) buf_putch(shift_key_map[scancode]);
         }
         
       }
       else {
         kbd_putchar(key_map[scancode]);
-        if(shift_key_map[scancode]) keyboard.buffer[keyboard.buf_index++] = key_map[scancode];
+        if (key_map[scancode]) buf_putch(key_map[scancode]);
       }
     }
 }
 
-char buf[KBD_BUF] = {0}, cah[KBD_CAH] = {0};
+char buf[KBD_BUF] = {0};
 
 void keyboard_install()
 {
@@ -111,20 +110,19 @@ void keyboard_install()
   keyboard.shift_flag = 0;
   keyboard.ctrl_flag = 0;
   keyboard.alt_flag = 0;
-  keyboard.last = 0;
-  keyboard.buffer = buf;
-  keyboard.cache = cah;  
+  keyboard.read_flag = 0;
+  keyboard.buffer.txt = buf;
+  keyboard.buffer.index = 0;
+  keyboard.buffer.size = 0;
+  outportb(0x60, 0);
   irq_install_handler(1, keyboard_handler);
 }
 
 void kbd_putchar(char c){
-  keyboard.last = c;
 	if (c == '\n') {
 		main_terminal.row++;
 		main_terminal.column = 0;
     main_terminal.nl_flag = 1;
-    print("%s\n", keyboard.buffer);
-		CMD_LINE
 	}
 	else if (c == '\t') {
 		main_terminal.column += 4;
@@ -139,9 +137,9 @@ void kbd_putchar(char c){
 		if (main_terminal.column > CMD_LINE_LEN || main_terminal.nl_flag == 0)
     		insert_at(' ', --main_terminal.column, main_terminal.row);
 	}
-  	else if (c == 0){
+  else if (c == 0){
 
-  	}
+  }
 	else {
 		if (keyboard.caps_flag == 1 && c >= 'a' && c <= 'z') insert_at(c - 32, main_terminal.column, main_terminal.row);
 		else insert_at(c, main_terminal.column, main_terminal.row);

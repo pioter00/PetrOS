@@ -1,5 +1,6 @@
 #ifndef IRQ_H
 #define IRQ_H
+#include "isr.h"
 
 extern void irq0();
 extern void irq1();

@@ -11,7 +11,7 @@
 #include "include/macros.h"
 
 //bugs: scrolling
-
+char line[256] = {0};
 void main() 
 {
 	gdt_install();
@@ -42,5 +42,10 @@ void main()
 		print("=");
 	}
 	print("\n");
-	CMD_LINE
+	while (1)
+	{
+		CMD_LINE
+		getstr(line);
+		// print("%s\n", line);
+	}
 }

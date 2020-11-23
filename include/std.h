@@ -18,5 +18,5 @@ void putch(char c);
 void move_csr();
 void print(char *output, ...);
 char getch();
-char *gets();
+void getstr(char * str);
 #endif

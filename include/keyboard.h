@@ -7,25 +7,25 @@ void keyboard_handler(struct regs *r);
 void keyboard_install();
 
 #define KBD_BUF 1024
-#define KBD_CAH 256
-#define START_TXT 3
 
 struct keyboard_t {
 	uint8_t caps_flag;
 	uint8_t shift_flag;
 	uint8_t ctrl_flag;
 	uint8_t alt_flag;
-
-    char *buffer;
-	uint32_t buf_index;
-    char *cache;
-	uint32_t cah_index;
-    char last;
+	uint8_t read_flag;
+	struct 
+	{
+		char *txt;
+		uint32_t index;
+		uint32_t size;
+	} buffer;
 } keyboard;
 
 void kbd_putchar(char c);
 void kbd_set(uint8_t code);
-void read_buf();
+void buf_putch(char c);
+void buf_read();
 
 
 #endif

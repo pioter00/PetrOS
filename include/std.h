@@ -23,6 +23,8 @@ void getstr(char * str);
 void getstrn(char * str, size_t n);
 int scan(char *format, ...);
 
+void flush();
+
 int isdigit(char c);
 int isspace(char c);
 

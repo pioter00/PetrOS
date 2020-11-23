@@ -113,7 +113,7 @@ void keyboard_install() {
 	keyboard.buffer.txt = buf;
 	keyboard.buffer.index = 0;
 	keyboard.buffer.size = 0;
-	outportb(0x60, 0);
+	// outportb(0x60, 0);
 	irq_install_handler(1, keyboard_handler);
 }
 

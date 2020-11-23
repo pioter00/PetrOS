@@ -42,17 +42,14 @@ void main()
 	// 	print("=");
 	// }
 	// print("\n");
-	char c;
-	char c1;
-	char c2;
+	int size;
 	while (1)
 	{
 		CMD_LINE
-		getstr(line);
-		print("Command '%s' not found.\n", line);
-		// c = getch();
-		// c1 = getch();
-		// c2 = getch();
-		// print("%c%c%c\n", c, c1, c2);
+		print("enter txt and size: ");
+		scan("%s %d", line, &size);
+		for (int i = 0; i < size; i++){
+			print("%d. %s\n", i + 1, line);
+		}
 	}
 }

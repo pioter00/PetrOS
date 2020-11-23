@@ -239,7 +239,7 @@ char buf_getch() {
 		keyboard.buffer.txt[i] = keyboard.buffer.txt[i + 1];
 	}
 	keyboard.buffer.size--;
-	keyboard.buffer.index = 0;
+	keyboard.buffer.index--;
 	return x;
 }
 void getstr(char * str) {
@@ -269,13 +269,13 @@ void getstrn(char * str, size_t n){
 			break;
 		}
 	}
-	if (i == n && n > 1) *(str + i) = '\0';	
+	if (i == n && n > 1) *(str + i) = '\0';
 }
+char c = 0;
 char getch(){
-	outportb(0x60, 0);
-	while (inportb(0x60) != 28);
-	char ch = buf_getch();
-	return ch;
+	if (keyboard.buffer.index == 0) getstrn(&c, 1);
+	else c = buf_getch();
+	return c;
 }
 int getint(int *var)
 {
@@ -373,6 +373,7 @@ int scan(char *input, ...)
 		}
 		else i++;
 	}
+	flush();
 	va_end(tab);
 	return counter;
 }
@@ -384,4 +385,9 @@ int isdigit(char c) {
 int isspace(char c){
 	if (c == ' ' || c <= '\n' || c == '\t') return 1;
 	return 0;
+}
+void flush(){
+	mem_set(keyboard.buffer.txt, 0, KBD_BUF);
+	keyboard.buffer.index = 0;
+	keyboard.buffer.size = 0;
 }

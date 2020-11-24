@@ -16,7 +16,8 @@ struct terminal {
 	uint8_t	color;
     uint16_t *buffer;
 
-	uint8_t nl_flag;
+	uint8_t backspace_x;
+	uint8_t backspace_y;
 } main_terminal;
 
 enum colors {

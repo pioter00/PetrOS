@@ -85,15 +85,8 @@ void keyboard_handler(struct regs *r)
     kbd_set(scancode);
     if (scancode < 128) {
       if (keyboard.shift_flag == 1) {
-        if (scancode == 28) {
-          putch('\n');
-          move_csr(); 
-        }
-        else {
           kbd_putchar(shift_key_map[scancode]);
           if (shift_key_map[scancode]) buf_putch(shift_key_map[scancode]);
-        }
-        
       }
       else {
         kbd_putchar(key_map[scancode]);
@@ -113,7 +106,6 @@ void keyboard_install() {
 	keyboard.buffer.txt = buf;
 	keyboard.buffer.index = 0;
 	keyboard.buffer.size = 0;
-	// outportb(0x60, 0);
 	irq_install_handler(1, keyboard_handler);
 }
 
@@ -121,25 +113,28 @@ void kbd_putchar(char c){
 	if (c == '\n') {
 		main_terminal.row++;
 		main_terminal.column = 0;
-    	main_terminal.nl_flag = 1;
-    	// print("read: %d\n", keyboard.buffer.is_readable);
+		SET_BCSP_BLOCK
 	}
 	else if (c == '\t') {
 		main_terminal.column += 4;
 	}
-  else if (c == '\b' && main_terminal.column == 0) {
+	else if (c == '\b' && main_terminal.column == 0) {
 		main_terminal.row--;
 		main_terminal.column = 79;
-		insert_at(' ', 79, main_terminal.row);
-    main_terminal.nl_flag = 1;
+		if (main_terminal.row == main_terminal.backspace_y)
+        	insert_at(' ', 79, main_terminal.row);
+		
 	}
-  else if (c == '\b' && main_terminal.column > 0) {
-		if (main_terminal.column > CMD_LINE_LEN || main_terminal.nl_flag == 0)
+	else if (c == '\b' && main_terminal.column > 0) {
+	  	// print("tx: %d ty: %d x: %d y: %d\n", main_terminal.column, main_terminal.row, main_terminal.backspace_x, main_terminal.backspace_y);
+		if (main_terminal.column > main_terminal.backspace_x && main_terminal.row == main_terminal.backspace_y)
     		insert_at(' ', --main_terminal.column, main_terminal.row);
+		else if (main_terminal.row > main_terminal.backspace_y)
+			insert_at(' ', --main_terminal.column, main_terminal.row);
 	}
-  else if (c == 0){
+	else if (c == 0){
 
-  }
+	}
 	else {
 		if (keyboard.caps_flag == 1 && c >= 'a' && c <= 'z') insert_at(c - 32, main_terminal.column, main_terminal.row);
 		else insert_at(c, main_terminal.column, main_terminal.row);
@@ -149,7 +144,6 @@ void kbd_putchar(char c){
 	if (main_terminal.column >= WIDTH_T){
 		main_terminal.column = 0;
 		main_terminal.row++;
-    main_terminal.nl_flag = 0;
   } 
 	if (main_terminal.row >= HEIGHT_T){
     scroll();

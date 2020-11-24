@@ -11,7 +11,10 @@
 	set_fn_col(LIGHT_GREY);\
 	print("> ");\
 
-#define CMD_LINE_LEN 13
+#define SET_BCSP_BLOCK\
+	main_terminal.backspace_x = main_terminal.column;\
+	main_terminal.backspace_y = main_terminal.row;\
+
 #define ENABLE_IRQ __asm__ __volatile__ ("sti");
 #define DISABLE_IRQ __asm__ __volatile__ ("cli");
 

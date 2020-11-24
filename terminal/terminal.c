@@ -24,7 +24,8 @@ void terminal_initialize(void)
     main_terminal.row = 0;
     main_terminal.column = 0;
     main_terminal.buffer = (uint16_t*)0xB8000;
-	main_terminal.nl_flag = 1;
+	main_terminal.backspace_x = 0;
+	main_terminal.backspace_y = 0;
 	set_bg_col(BLACK);
 	set_fn_col(LIGHT_GREY);
 	main_terminal.color = combine_colors(main_terminal.fncolor, main_terminal.bgcolor);

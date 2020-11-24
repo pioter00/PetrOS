@@ -7,6 +7,7 @@
 #include "../include/isr.h"
 #include "../include/terminal.h"
 #include "../include/keyboard.h"
+#include "../include/macros.h"
 
 unsigned char inportb (unsigned short _port)
 {
@@ -28,7 +29,8 @@ void putch(char c)
 		main_terminal.column = 0;
 	}
 	else if (c == '\t') {
-		main_terminal.column += 4;
+		for (int i = 0; i < 4; i++)
+			putch(' ');
 	}
 	else if (c == '\b' && main_terminal.column == 0) {
 		main_terminal.row--;
@@ -58,7 +60,8 @@ void putch(char c)
 			insert_at(' ', main_terminal.column + i, main_terminal.row);
 		}
 	}
-	move_csr(); 
+	move_csr();
+	SET_BCSP_BLOCK
 }
 
 void move_csr() {
@@ -368,6 +371,7 @@ int getdouble(double *var)
 int scan(char *input, ...)
 {
 	int counter = 0, i = 0, size = strlen(input);
+	outportb(0x60, 0);
 	va_list tab;
 	va_start(tab, input);
 	int *a = 0;

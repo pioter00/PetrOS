@@ -10,7 +10,7 @@
 #include "include/terminal.h"
 #include "include/macros.h"
 
-// bugs backspace and spaces not handled in scan
+// bugs backspace
 
 int read_vector(int* vec, int size, int stop_value)
 {
@@ -89,6 +89,7 @@ void _help(){
 	}	
 }
 int command(char *str) {
+	if (str == NULL) return 1;
 	if (*str == 'r' && *(str + 1) == 'u' && *(str + 2) == 'n'){
 		_run();
 		return 1;
@@ -137,8 +138,10 @@ void main()
 	while (1)
 	{
 		CMD_LINE
-		scan("%ss", line);
-		if (command(line));
-		else print("Invalid sequence '%s'. Type 'help' to see avalible commands.\n", line);
+		scan("%d", &err_code);
+		print("%d\n", err_code);
+		// scan("%ss", line);
+		// if (command(line));
+		// else print("Invalid sequence '%s'. Type 'help' to see avalible commands.\n", line);
 	}
 }

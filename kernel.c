@@ -65,10 +65,11 @@ int program(){
 
 char line[256] = {0};
 
-char *commands[20] = {
+char *commands[] = {
 	"run",
 	"echo",
 	"help",
+	"settime",
 	NULL
 };
 
@@ -87,7 +88,7 @@ void _help(){
 	}	
 }
 int command(char *str) {
-	if (str == NULL) return 1;
+	if (*str == 0) return 1;
 	if (*str == 'r' && *(str + 1) == 'u' && *(str + 2) == 'n'){
 		_run();
 		return 1;
@@ -109,9 +110,12 @@ void main()
 	isrs_install();
 	irq_install();
 	terminal_initialize();
+	datetime_install();
 	keyboard_install();
 	ENABLE_IRQ
-	print("\tPetrOS 0.01\n\n");
+	print("\tPetrOS 0.01\t\t\t");
+    datetime_print();
+	print("\n\n");
 	set_fn_col(DARK_GREY);
 	for(int i = 0; i < WIDTH_T; i++){
 		print("=");

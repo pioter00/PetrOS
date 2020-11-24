@@ -1,11 +1,9 @@
 #include "../include/gdt.h"
 
-
 extern void gdt_flush();
 
 
-void gdt_set_gate(int num, unsigned long base, unsigned long limit, unsigned char access, unsigned char gran)
-{
+void gdt_set_gate(int num, unsigned long base, unsigned long limit, unsigned char access, unsigned char gran) {
     gdt[num].base_low = (base & 0xFFFF);
     gdt[num].base_middle = (base >> 16) & 0xFF;
     gdt[num].base_high = (base >> 24) & 0xFF;
@@ -14,8 +12,7 @@ void gdt_set_gate(int num, unsigned long base, unsigned long limit, unsigned cha
     gdt[num].granularity |= (gran & 0xF0);
     gdt[num].access = access;
 }
-void gdt_install()
-{
+void gdt_install() {
     gp.limit = (sizeof(struct gdt_entry) * 3) - 1;
     gp.base = (uint32_t)&gdt;
     gdt_set_gate(0, 0, 0, 0, 0);

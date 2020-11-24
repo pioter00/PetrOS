@@ -79,8 +79,7 @@ unsigned char shift_key_map[128] =
   0,	/* F12 Key */
   0,	/* All other keys are undefined */
 };
-void keyboard_handler(struct regs *r)
-{
+void keyboard_handler(struct regs *r) {
     unsigned char scancode = inportb(0x60);
     kbd_set(scancode);
     if (scancode < 128) {

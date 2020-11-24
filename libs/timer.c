@@ -18,3 +18,14 @@ void sleep(int ms){
 		++timer_ticks;
 	timer_ticks = 0;
 }
+void datetime_install() {
+    datetime.seconds = 0;
+    datetime.minutes = 0;
+    datetime.hours = 0;
+    datetime.day = 1;
+    datetime.month = 1;
+    datetime.year = 2000;
+}
+void datetime_print(){
+    print("%d/0%d/%d  %d:0%d:0%d", datetime.day, datetime.month, datetime.year, datetime.hours, datetime.minutes, datetime.seconds);
+}

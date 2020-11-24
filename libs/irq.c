@@ -4,21 +4,15 @@
 #include "../include/std.h"
 #include <stdint.h>
 
-void *irq_routines[16] =
-{
+void *irq_routines[16] = {
     0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0
 };
 
-/* This installs a custom IRQ handler for the given IRQ */
-void irq_install_handler(int irq, void (*handler)(struct regs *r))
-{
+void irq_install_handler(int irq, void (*handler)(struct regs *r)) {
     irq_routines[irq] = handler;
 }
-
-/* This clears the handler for a given IRQ */
-void irq_uninstall_handler(int irq)
-{
+void irq_uninstall_handler(int irq) {
     irq_routines[irq] = 0;
 }
 
@@ -37,9 +31,6 @@ void irq_remap(void)
     outportb(0xA1, 0x0);
 }
 
-/* We first remap the interrupt controllers, and then we install
-*  the appropriate ISRs to the correct entries in the IDT. This
-*  is just like installing the exception handlers */
 void irq_install()
 {
     irq_remap();
@@ -63,8 +54,7 @@ void irq_install()
     idt_set_gate(47, (unsigned)irq15, 0x08, 0x8E);
 }
 
-void irq_handler(struct regs *r)
-{
+void irq_handler(struct regs *r) {
     void (*handler)(struct regs *r);
     handler = irq_routines[r->int_no - 32];
     if (handler)

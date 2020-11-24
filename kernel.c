@@ -10,8 +10,11 @@
 #include "include/terminal.h"
 #include "include/macros.h"
 
+<<<<<<< HEAD
 // bugs backspace
 
+=======
+>>>>>>> parent of 40eacac... bug with spaces fixed
 int read_vector(int* vec, int size, int stop_value)
 {
   int i,v,counter=0;
@@ -77,7 +80,6 @@ char *commands[20] = {
 void _run(){
 	int err_code = program();
 	print("returned value from program: %d\n", err_code);
-	flush();
 }
 void _echo(char * str){
 	print("%s\n", str);
@@ -138,10 +140,17 @@ void main()
 	while (1)
 	{
 		CMD_LINE
+<<<<<<< HEAD
 		scan("%d", &err_code);
 		print("%d\n", err_code);
 		// scan("%ss", line);
 		// if (command(line));
 		// else print("Invalid sequence '%s'. Type 'help' to see avalible commands.\n", line);
+=======
+		scan("%ss", line);
+		if (command(line));
+		else print("Invalid sequence '%s'. Type 'help' to see avalible commands.\n", line);
+	
+>>>>>>> parent of 40eacac... bug with spaces fixed
 	}
 }

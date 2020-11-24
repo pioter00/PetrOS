@@ -248,6 +248,7 @@ char buf_getch() {
 void getstr(char * str) {
 	outportb(0x60, 0);
 	while (inportb(0x60) != 28);
+	// print("%s\n", keyboard.buffer.txt);
 	for (int i = 0; ; i++)
 	{
 		char c = buf_getch();
@@ -261,26 +262,15 @@ void getstr(char * str) {
 void getstrs(char * str) {
 	outportb(0x60, 0);
 	while (inportb(0x60) != 28);
-	int flag = 0;
-	for (int i = 0; ; )
+	// print("%s\n", keyboard.buffer.txt);
+	for (int i = 0; ; i++)
 	{
 		char c = buf_getch();
-		if (c != '\n' && c != 0 && c != ' ') {
-			flag = 1;
-			*(str + i) = c;
-			i++;
-		}
-		else if (c == ' ') {
-			if (flag == 1) {
-				*(str + i) = c;
-				i++;
-			}
-		}
+		if (c != '\n' && c != 0) *(str + i) = c;
 		else {
 			*(str + i) = '\0';
 			break;
 		}
-
 	}	
 }
 void getstrn(char * str, size_t n){
@@ -308,8 +298,7 @@ int getint(int *var)
 {
   *var = 0;
   int first = 0, sign = 1, flag = 1, res = 1;
-  char c = 0;
-  while (isspace(c)) c = getch();
+  char c = getch();
   while (1)
   {
     if(c == '-' && first == 0) sign = -1;
@@ -337,8 +326,7 @@ int getdouble(double *var)
 {
   *var = 0;
   int flag = 1, first = 0, sign = 1, point = 0, pos = 0, res = 1;
-  char c = 0;
-  while (isspace(c)) c = getch();
+  char c = getch();
   while (1)
   {
     if(c == '-' && first == 0) sign = -1;
@@ -423,7 +411,7 @@ int isdigit(char c) {
 	return 0;
 }
 int isspace(char c){
-	if (c == ' ' || c == '\n' || c == '\t') return 1;
+	if (c == ' ' || c <= '\n' || c == '\t') return 1;
 	return 0;
 }
 void flush(){

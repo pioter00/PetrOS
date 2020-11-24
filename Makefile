@@ -1,6 +1,6 @@
 OUTFILE := kernel.bin 
 OBJS := start.o kernel.o libs/std.o terminal/terminal.o libs/timer.o libs/gdt.o libs/idt.o libs/isr.o libs/irq.o keyboard/kbd.o keyboard/buffer.o
-CFLAGS := -O2 -fomit-frame-pointer -fno-builtin -m32 -fno-pie
+CFLAGS := -O2 -fomit-frame-pointer -fno-builtin -m32 -fno-pie -fno-stack-protector
 
 full:
 	make comp
@@ -18,7 +18,7 @@ comp:
 	gcc keyboard/buffer.c -c -o keyboard/buffer.o $(CFLAGS)
 	gcc terminal/terminal.c -c -o terminal/terminal.o $(CFLAGS)
 	gcc libs/timer.c -c -o libs/timer.o $(CFLAGS)
-	gcc kernel.c -m32 -O2 -fno-pie -fno-builtin -c -o kernel.o
+	gcc kernel.c -m32 -O2 -fno-pie -fno-stack-protector -fno-builtin -c -o kernel.o
 	ld -Tlinker.ld -o $(OUTFILE) $(OBJS)
 	cp $(OUTFILE) isodir/boot/kernel.bin
 	grub-mkrescue -o PetrOS.iso isodir

@@ -17,6 +17,7 @@ int read_vector(int* vec, int size, int stop_value)
   for (i=0;i<size;i++)
   {
     v = scan("%d", (vec + i));
+	if (!v) return -2;
     if (*(vec + i) == stop_value) break;
     counter++;
   }
@@ -47,11 +48,14 @@ void display_vector(const int* vec, int size)
   print("\n");
 }
 
-int vec[100];
-
 int program(){
+	int vec[100];
 	print("Enter numbers: ");
 	int s = read_vector(vec, 100, 0);
+	if (s < 0){
+		print("Incorrect input data!\n");
+		return s;
+	}
 	display_vector(vec, s);
 	sort_vector(vec, s);
 	print("Sorted array: \n");
@@ -135,5 +139,4 @@ void main()
 		else print("Invalid sequence '%s'. Type 'help' to see avalible commands.\n", line);
 	
 	}
-	//%ss handling functions above declared
 }

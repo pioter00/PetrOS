@@ -256,6 +256,20 @@ void getstr(char * str) {
 		}
 	}	
 }
+void getstrs(char * str) {
+	outportb(0x60, 0);
+	while (inportb(0x60) != 28);
+	// print("%s\n", keyboard.buffer.txt);
+	for (int i = 0; ; i++)
+	{
+		char c = buf_getch();
+		if (c != '\n' && c != 0) *(str + i) = c;
+		else {
+			*(str + i) = '\0';
+			break;
+		}
+	}	
+}
 void getstrn(char * str, size_t n){
 	outportb(0x60, 0);
 	while (inportb(0x60) != 28);
@@ -263,7 +277,7 @@ void getstrn(char * str, size_t n){
 	for (i = 0; i < n; i++)
 	{
 		char c = buf_getch();
-		if (c != '\n' && c != 0) *(str + i) = c;
+		if (c != '\n' && c != 0 && c != ' ') *(str + i) = c;
 		else {
 			*(str + i) = '\0';
 			break;
@@ -364,16 +378,26 @@ int scan(char *input, ...)
 			}
 			else if(*(input + i + 1) == 's')
 			{
-				c = va_arg(tab, char*);
-				getstr(c);
-				counter++;
-				i += 2;
+				if(i < size - 2 && *(input + i + 2) == 's') {
+					c = va_arg(tab, char*);
+					getstrs(c);
+					flush();
+					counter++;
+					i += 2;
+				}
+				else {
+					c = va_arg(tab, char*);
+					getstr(c);
+					flush();
+					counter++;
+					i += 2;
+				}
 			}
 			else i++;
 		}
 		else i++;
 	}
-	flush();
+	// flush();
 	va_end(tab);
 	return counter;
 }

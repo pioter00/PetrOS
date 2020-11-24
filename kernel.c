@@ -75,6 +75,7 @@ char *commands[20] = {
 void _run(){
 	int err_code = program();
 	print("returned value from program: %d\n", err_code);
+	flush();
 }
 void _echo(char * str){
 	print("%s\n", str);

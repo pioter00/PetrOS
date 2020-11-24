@@ -262,11 +262,21 @@ void getstr(char * str) {
 void getstrs(char * str) {
 	outportb(0x60, 0);
 	while (inportb(0x60) != 28);
-	// print("%s\n", keyboard.buffer.txt);
-	for (int i = 0; ; i++)
+	int flag = 0;
+	for (int i = 0; ; )
 	{
 		char c = buf_getch();
-		if (c != '\n' && c != 0) *(str + i) = c;
+		if (c != '\n' && c != 0 && c != ' ') {
+			flag = 1;
+			*(str + i) = c;
+			i++;
+		}
+		else if (c == ' ') {
+			if (flag == 1) {
+				*(str + i) = c;
+				i++;
+			}
+		}
 		else {
 			*(str + i) = '\0';
 			break;
@@ -298,7 +308,8 @@ int getint(int *var)
 {
   *var = 0;
   int first = 0, sign = 1, flag = 1, res = 1;
-  char c = getch();
+  char c;
+  while (isspace(c)) c = getch();
   while (1)
   {
     if(c == '-' && first == 0) sign = -1;

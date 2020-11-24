@@ -111,27 +111,33 @@ void keyboard_install() {
 
 void kbd_putchar(char c){
 	if (c == '\n') {
+    main_terminal.column = 79;
+    SET_BCSP_BLOCK
 		main_terminal.row++;
 		main_terminal.column = 0;
-		SET_BCSP_BLOCK
 	}
 	else if (c == '\t') {
 		main_terminal.column += 4;
 	}
 	else if (c == '\b' && main_terminal.column == 0) {
-		main_terminal.row--;
-		main_terminal.column = 79;
-		if (main_terminal.row == main_terminal.backspace_y)
-        	insert_at(' ', 79, main_terminal.row);
-		
+    // print("tx: %d ty: %d x: %d y: %d\n", main_terminal.column, main_terminal.row, main_terminal.backspace_x, main_terminal.backspace_y);
+		if (main_terminal.row > main_terminal.backspace_y){
+      main_terminal.row--;
+      main_terminal.column = 79;
+      insert_at(' ', 79, main_terminal.row);
+    }
 	}
 	else if (c == '\b' && main_terminal.column > 0) {
 	  	// print("tx: %d ty: %d x: %d y: %d\n", main_terminal.column, main_terminal.row, main_terminal.backspace_x, main_terminal.backspace_y);
-		if (main_terminal.column > main_terminal.backspace_x && main_terminal.row == main_terminal.backspace_y)
+		if (main_terminal.column > main_terminal.backspace_x && main_terminal.backspace_x < 79 && main_terminal.row == main_terminal.backspace_y)
     		insert_at(' ', --main_terminal.column, main_terminal.row);
+    else if (main_terminal.backspace_x == 79) {
+      insert_at(' ', --main_terminal.column <= 0 ? 0 : main_terminal.column, main_terminal.row);
+    }
 		else if (main_terminal.row > main_terminal.backspace_y)
 			insert_at(' ', --main_terminal.column, main_terminal.row);
 	}
+
 	else if (c == 0){
 
 	}

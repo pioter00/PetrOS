@@ -1,8 +1,10 @@
 #include "../include/timer.h"
 #include "../include/terminal.h"
 #include "../include/std.h"
+#include "../include/irq.h"
+#include "../include/isr.h"
 
-void timer_install(int hz)
+void set_frequency(int hz)
 {
     int divisor = 1193180 / hz;
     outportb(0x43, 0x36);
@@ -12,11 +14,34 @@ void timer_install(int hz)
 
 volatile unsigned int timer_ticks = 0;
 
+void update_time(){
+    int temp_y = main_terminal.row;
+    int temp_x = main_terminal.column;
+    main_terminal.row = 0;
+    main_terminal.column = 27;
+    datetime_print();
+    main_terminal.row = temp_y;
+    main_terminal.column = temp_x;
+    move_csr();
+}
+
+void timer_handler(struct regs *r)
+{
+    timer_ticks++;
+    if (timer_ticks % 100 == 0){
+        datetime.seconds++;
+        update_time();
+    }
+}
+void timer_install()
+{
+    set_frequency(100);
+    irq_install_handler(0, timer_handler);
+}
+
 void sleep(int ms){
-	timer_ticks = 0;
-	for(int i = 0; timer_ticks < ms*1940; i++)
-		++timer_ticks;
-	timer_ticks = 0;
+	unsigned long sleep_ticks = timer_ticks + ms*10;
+    while (timer_ticks < sleep_ticks);
 }
 void datetime_install() {
     datetime.seconds = 0;

@@ -16,7 +16,7 @@ struct datetime_t
 
 void datetime_install();
 void datetime_print();
-void timer_install(int hz);
-void do_timer();
+void set_frequency(int hz);
+void timer_install();
 void sleep(int ms);
 #endif

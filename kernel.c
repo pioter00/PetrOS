@@ -87,6 +87,53 @@ void _help(){
 		print("%s\n", *(commands + i));
 	}	
 }
+void _settime(){
+	int day, month, year, hour, minutes, seconds;
+	print("Set day: ");
+	scan("%d", &day);
+	if (day < 1 || day > 31){
+		print("Invalid value!\n");
+		return;
+	} 
+	print("Set month: ");
+	scan("%d", &month);
+	if (month < 1 || month > 12){
+		print("Invalid value!\n");
+		return;
+	} 
+	print("Set year: ");
+	scan("%d", &year);
+	if (year < 1 || year > 3000){
+		print("Invalid value!\n");
+		return;
+	} 
+	print("Set hour: ");
+	scan("%d", &hour);
+	if (hour < 0 || hour > 24){
+		print("Invalid value!\n");
+		return;
+	} 
+	print("Set minutes: ");
+	scan("%d", &minutes);
+	if (minutes < 0 || minutes > 60){
+		print("Invalid value!\n");
+		return;
+	} 
+	print("Set seconds: ");
+	scan("%d", &seconds);
+	if (seconds < 0 || seconds > 60){
+		print("Invalid value!\n");
+		return;
+	}
+	DISABLE_IRQ
+	datetime.seconds = seconds;
+    datetime.minutes = minutes;
+    datetime.hours = hour;
+    datetime.day = day;
+    datetime.month = month;
+    datetime.year = year;
+	ENABLE_IRQ
+}
 int command(char *str) {
 	flush();
 	if (*str == 0) return 1;
@@ -101,6 +148,10 @@ int command(char *str) {
 	}
 	else if (*str == 'h' && *(str + 1) == 'e' && *(str + 2) == 'l' && *(str + 3) == 'p'){
 		_help();
+		return 1;
+	}
+	else if (*str == 's' && *(str + 1) == 'e' && *(str + 2) == 't' && *(str + 3) == 't' && *(str + 4) == 'i' && *(str + 5) == 'm' && *(str + 6) == 'e'){
+		_settime();
 		return 1;
 	}
 	return 0;

@@ -8,7 +8,7 @@ unsigned char inportb (unsigned short _port);
 void outportb (unsigned short _port, unsigned char _data);
 
 unsigned int strlen(char *txt);
-long long power(int base);
+long long power10(int base);
 int abs(int a);
 long long llabs(long long a);
 unsigned int num_len(long long num);

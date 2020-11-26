@@ -22,14 +22,28 @@ void update_time(){
     datetime_print();
     main_terminal.row = temp_y;
     main_terminal.column = temp_x;
-    move_csr();
 }
 
 void timer_handler(struct regs *r)
 {
     timer_ticks++;
     if (timer_ticks % 100 == 0){
-        datetime.seconds++;
+        if (++datetime.seconds > 59){
+            datetime.seconds = 0;
+            if (++datetime.minutes > 59){
+                datetime.minutes = 0;
+                if (++datetime.hours > 23){
+                    datetime.hours = 0;
+                    if (++datetime.day > 31){
+                        datetime.day = 1;
+                        if (++datetime.month > 12){
+                            datetime.month = 1;
+                            datetime.year++;
+                        }
+                    }
+                }
+            }
+        }
         update_time();
     }
 }
@@ -51,6 +65,77 @@ void datetime_install() {
     datetime.month = 1;
     datetime.year = 2000;
 }
+
+void printint_at_date(int a)
+{
+	if (a == 0)
+	{
+		insert_at('0', main_terminal.column++, main_terminal.row);
+		return;
+	}
+	int size = num_len(abs(a)), i;
+	char x;
+	if (a > 0)
+	{
+		for(i=size-1;i>=0;i--)
+		{
+			x = a / (int)power10(i) % 10 + '0';
+			insert_at(x, main_terminal.column++, main_terminal.row);
+		}
+	}
+	else
+	{
+		a = abs(a);
+		for(i=size;i>=0;i--)
+		{
+			if (i == size) putch('-');
+			else
+			{
+				x = a / (int)power10(i) % 10 + '0';
+				insert_at(x, main_terminal.column++, main_terminal.row);
+
+			}
+		}
+		size++;
+	}
+}
+void printstring_at_date(char *txt)
+{
+	for(unsigned int i = 0; i < strlen(txt); i++){
+		insert_at(*(txt + i), main_terminal.column++, main_terminal.row);
+	}
+}
 void datetime_print(){
-    print("%d/0%d/%d  %d:0%d:0%d", datetime.day, datetime.month, datetime.year, datetime.hours, datetime.minutes, datetime.seconds);
+    // print("%d/0%d/%d  %d:0%d:0%d", datetime.day, datetime.month, datetime.year, datetime.hours, datetime.minutes, datetime.seconds);
+    if (datetime.day > 9) printint_at_date(datetime.day);
+    else {
+        printint_at_date(0);
+        printint_at_date(datetime.day);
+    }
+    printstring_at_date("/");
+    if (datetime.month > 9) printint_at_date(datetime.month);
+    else {
+        printint_at_date(0);
+        printint_at_date(datetime.month);
+    }
+    printstring_at_date("/");
+    printint_at_date(datetime.year);
+    printstring_at_date("  ");
+    if (datetime.hours > 9) printint_at_date(datetime.hours);
+    else {
+        printint_at_date(0);
+        printint_at_date(datetime.hours);
+    }
+    printstring_at_date(":");
+    if (datetime.minutes > 9) printint_at_date(datetime.minutes);
+    else {
+        printint_at_date(0);
+        printint_at_date(datetime.minutes);
+    }
+    printstring_at_date(":");
+    if (datetime.seconds > 9) printint_at_date(datetime.seconds);
+    else {
+        printint_at_date(0);
+        printint_at_date(datetime.seconds);
+    }
 }

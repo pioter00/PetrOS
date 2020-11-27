@@ -88,8 +88,26 @@ void keyboard_handler(struct regs *r) {
           if (shift_key_map[scancode]) buf_putch(shift_key_map[scancode]);
       }
       else {
-        kbd_putchar(key_map[scancode]);
-        if (key_map[scancode]) buf_putch(key_map[scancode]);
+        // removing previous cmd has to be added
+        if (main_terminal.lines_index >= 0 && scancode == 72)
+        {
+          for (uint8_t i = 0; i < strlen(main_terminal.lines[main_terminal.lines_index]); i++){
+            kbd_putchar(main_terminal.lines[main_terminal.lines_index][i]);
+            buf_putch(main_terminal.lines[main_terminal.lines_index][i]);
+          }
+          main_terminal.lines_index--;
+        }
+        else if (main_terminal.lines_index != main_terminal.lines_counter && scancode == 80){
+          for (uint8_t i = 0; i < strlen(main_terminal.lines[main_terminal.lines_index]); i++){
+            kbd_putchar(main_terminal.lines[main_terminal.lines_index][i]);
+            buf_putch(main_terminal.lines[main_terminal.lines_index][i]);
+          }
+          main_terminal.lines_index++;
+        }
+        else{      
+          kbd_putchar(key_map[scancode]);
+          if (key_map[scancode]) buf_putch(key_map[scancode]);
+        }
       }
     }
 }

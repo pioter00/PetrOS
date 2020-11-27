@@ -27,7 +27,7 @@ void update_time(){
 void timer_handler(struct regs *r)
 {
     timer_ticks++;
-    if (timer_ticks % 100 == 0){
+    if (timer_ticks % FREQ == 0){
         if (++datetime.seconds > 59){
             datetime.seconds = 0;
             if (++datetime.minutes > 59){
@@ -49,12 +49,12 @@ void timer_handler(struct regs *r)
 }
 void timer_install()
 {
-    set_frequency(100);
+    set_frequency(FREQ);
     irq_install_handler(0, timer_handler);
 }
 
 void sleep(int ms){
-	unsigned long sleep_ticks = timer_ticks + ms*10;
+	unsigned long sleep_ticks = timer_ticks + ms * (1000 / FREQ);
     while (timer_ticks < sleep_ticks);
 }
 void datetime_install() {

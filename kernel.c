@@ -7,6 +7,7 @@
 #include "include/keyboard.h"
 #include "include/std.h"
 #include "include/timer.h"
+#include "include/threads.h"
 #include "include/terminal.h"
 #include "include/macros.h"
 
@@ -78,6 +79,9 @@ void _run(){
 	print("returned value from program: %d\n", err_code);
 	flush();
 }
+void _xd(){
+	print("test threads\n");
+}
 void _echo(char * str){
 	print("%s\n", str);
 }
@@ -137,6 +141,10 @@ void _settime(){
 int command(char *str) {
 	flush();
 	if (*str == 0) return 1;
+	if (*str == 'x' && *(str + 1) == 'd'){
+		_xd();
+		return 1;
+	}
 	if (*str == 'r' && *(str + 1) == 'u' && *(str + 2) == 'n'){
 		_run();
 		return 1;
@@ -194,10 +202,10 @@ void main()
 	// print("\n");
 	while (1)
 	{
-		CMD_LINE
+		CMD_LINE		
 		scan("%ss", line);
+		add_line(line);
 		if (command(line));
 		else print("Invalid sequence '%s'. Type 'help' to see avalible commands.\n", line);
-	
 	}
 }

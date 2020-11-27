@@ -454,6 +454,8 @@ irq_common_stub:
     add esp, 8
     iret
 
+
+
 SECTION .bss
     resb 8192
 _sys_stack:

@@ -14,6 +14,8 @@ struct datetime_t
     uint16_t year;
 } datetime;
 
+#define FREQ 100
+
 #define DATE_X 27
 #define DATE_Y 0
 

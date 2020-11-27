@@ -17,17 +17,28 @@ void set_bg_col(enum colors col){
 void set_fn_col(enum colors col){
 	main_terminal.fncolor = col;
 }
-void terminal_initialize(void) {
+void terminal_initialize() {
     main_terminal.row = 0;
     main_terminal.column = 0;
     main_terminal.buffer = (uint16_t*)0xB8000;
 	main_terminal.backspace_x = 0;
 	main_terminal.backspace_y = 0;
+	mem_set(main_terminal.lines, 0, 30 * 256);
+	main_terminal.lines_counter = 0;
+	main_terminal.lines_index = 0;
 	set_bg_col(BLACK);
 	set_fn_col(LIGHT_GREY);
 	main_terminal.color = combine_colors(main_terminal.fncolor, main_terminal.bgcolor);
 }
- 
+
+void add_line(char *line){
+	for (unsigned int i = 0; i <= strlen(line) && i < 256; i++){
+		main_terminal.lines[main_terminal.lines_counter][i] = line[i];
+	}
+	if (main_terminal.lines_counter++ >= 29) main_terminal.lines_counter = 0;
+	main_terminal.lines_index++;
+}
+
 void insert_at(char c, unsigned x, unsigned y) {
 	main_terminal.color = combine_colors(main_terminal.fncolor, main_terminal.bgcolor);
 	*(main_terminal.buffer + y * WIDTH_T + x) = combine_text(c, main_terminal.fncolor);

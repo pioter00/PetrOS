@@ -18,6 +18,9 @@ struct terminal {
 
 	uint8_t backspace_x;
 	uint8_t backspace_y;
+	char lines[30][256];
+	uint8_t lines_index;
+	uint8_t lines_counter;
 } main_terminal;
 
 enum colors {
@@ -46,6 +49,9 @@ void terminal_initialize();
  
 void insert_at(char c, unsigned x, unsigned y);
 
+void add_line(char *line);
+
+void test_line(int num);
 
 void set_bg_col(enum colors col);
 void set_fn_col(enum colors col);

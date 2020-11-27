@@ -1,5 +1,5 @@
 OUTFILE := kernel.bin 
-OBJS := start.o kernel.o libs/std.o terminal/terminal.o libs/timer.o libs/gdt.o libs/idt.o libs/isr.o libs/irq.o keyboard/kbd.o keyboard/buffer.o
+OBJS := start.o kernel.o libs/std.o terminal/terminal.o libs/timer.o libs/gdt.o libs/idt.o libs/isr.o libs/irq.o libs/threads.o keyboard/kbd.o keyboard/buffer.o 
 CFLAGS := -O2 -fomit-frame-pointer -fno-builtin -m32 -fno-pie -fno-stack-protector
 
 full:
@@ -14,6 +14,7 @@ comp:
 	gcc libs/idt.c -c -o libs/idt.o $(CFLAGS)
 	gcc libs/isr.c -c -o libs/isr.o $(CFLAGS)
 	gcc libs/irq.c -c -o libs/irq.o $(CFLAGS)
+	gcc libs/threads.c -c -o libs/threads.o $(CFLAGS)
 	gcc keyboard/kbd.c -c -o keyboard/kbd.o $(CFLAGS)
 	gcc keyboard/buffer.c -c -o keyboard/buffer.o $(CFLAGS)
 	gcc terminal/terminal.c -c -o terminal/terminal.o $(CFLAGS)

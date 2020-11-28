@@ -71,6 +71,7 @@ char *commands[] = {
 	"echo",
 	"help",
 	"settime",
+	"clear",
 	NULL
 };
 
@@ -81,6 +82,13 @@ void _run(){
 }
 void _xd(){
 	print("test threads\n");
+}
+void _clear(){
+	mem_set(main_terminal.buffer + WIDTH_T * 2, 0, WIDTH_T * (WIDTH_T - 2) * 2);
+	main_terminal.column = 0;
+	main_terminal.row = 2;
+	move_csr();
+	flush();
 }
 void _echo(char * str){
 	print("%s\n", str);
@@ -156,6 +164,10 @@ int command(char *str) {
 	}
 	else if (*str == 'h' && *(str + 1) == 'e' && *(str + 2) == 'l' && *(str + 3) == 'p'){
 		_help();
+		return 1;
+	}
+	else if (*str == 'c' && *(str + 1) == 'l' && *(str + 2) == 'e' && *(str + 3) == 'a' && *(str + 4) == 'r'){
+		_clear();
 		return 1;
 	}
 	else if (*str == 's' && *(str + 1) == 'e' && *(str + 2) == 't' && *(str + 3) == 't' && *(str + 4) == 'i' && *(str + 5) == 'm' && *(str + 6) == 'e'){

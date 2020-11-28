@@ -66,6 +66,7 @@ void putch(char c)
 
 void move_csr() {
 	unsigned temp = main_terminal.row * 80 + main_terminal.column;
+	*(main_terminal.buffer + temp) = combine_text(0, LIGHT_GREY);
 	outportb(0x3D4, 14);
 	outportb(0x3D5, temp >> 8);
 	outportb(0x3D4, 15);

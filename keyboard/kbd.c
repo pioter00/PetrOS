@@ -88,26 +88,28 @@ void keyboard_handler(struct regs *r) {
           if (shift_key_map[scancode]) buf_putch(shift_key_map[scancode]);
       }
       else {
+        kbd_putchar(key_map[scancode]);
+        if (key_map[scancode]) buf_putch(key_map[scancode]);
         // removing previous cmd has to be added
-        if (main_terminal.lines_index >= 0 && scancode == 72)
-        {
-          for (uint8_t i = 0; i < strlen(main_terminal.lines[main_terminal.lines_index]); i++){
-            kbd_putchar(main_terminal.lines[main_terminal.lines_index][i]);
-            buf_putch(main_terminal.lines[main_terminal.lines_index][i]);
-          }
-          main_terminal.lines_index--;
-        }
-        else if (main_terminal.lines_index != main_terminal.lines_counter && scancode == 80){
-          for (uint8_t i = 0; i < strlen(main_terminal.lines[main_terminal.lines_index]); i++){
-            kbd_putchar(main_terminal.lines[main_terminal.lines_index][i]);
-            buf_putch(main_terminal.lines[main_terminal.lines_index][i]);
-          }
-          main_terminal.lines_index++;
-        }
-        else{      
-          kbd_putchar(key_map[scancode]);
-          if (key_map[scancode]) buf_putch(key_map[scancode]);
-        }
+        // if (main_terminal.lines_index >= 0 && scancode == 72)
+        // {
+        //   for (uint8_t i = 0; i < strlen(main_terminal.lines[main_terminal.lines_index]); i++){
+        //     kbd_putchar(main_terminal.lines[main_terminal.lines_index][i]);
+        //     buf_putch(main_terminal.lines[main_terminal.lines_index][i]);
+        //   }
+        //   main_terminal.lines_index--;
+        // }
+        // else if (main_terminal.lines_index != main_terminal.lines_counter && scancode == 80){
+        //   for (uint8_t i = 0; i < strlen(main_terminal.lines[main_terminal.lines_index]); i++){
+        //     kbd_putchar(main_terminal.lines[main_terminal.lines_index][i]);
+        //     buf_putch(main_terminal.lines[main_terminal.lines_index][i]);
+        //   }
+        //   main_terminal.lines_index++;
+        // }
+        // else{      
+        //   kbd_putchar(key_map[scancode]);
+        //   if (key_map[scancode]) buf_putch(key_map[scancode]);
+        // }
       }
     }
 }
@@ -137,12 +139,15 @@ void kbd_putchar(char c){
 		main_terminal.column += 4;
 	}
 	else if (c == '\b' && main_terminal.column == 0) {
+    int a = main_terminal.column, b = main_terminal.row, c= main_terminal.backspace_x, d = main_terminal.backspace_y;
     // print("tx: %d ty: %d x: %d y: %d\n", main_terminal.column, main_terminal.row, main_terminal.backspace_x, main_terminal.backspace_y);
-		if (main_terminal.row > main_terminal.backspace_y){
+		if (main_terminal.row > main_terminal.backspace_y && main_terminal.backspace_x != 79){
       main_terminal.row--;
       main_terminal.column = 79;
       insert_at(' ', 79, main_terminal.row);
     }
+    // print(" tx: %d ty: %d x: %d y: %d\n", a, b, c, d);
+    
 	}
 	else if (c == '\b' && main_terminal.column > 0) {
 	  	// print("tx: %d ty: %d x: %d y: %d\n", main_terminal.column, main_terminal.row, main_terminal.backspace_x, main_terminal.backspace_y);

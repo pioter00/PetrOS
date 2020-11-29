@@ -148,6 +148,7 @@ void _settime(){
 }
 int command(char *str) {
 	flush();
+	keyboard.enter = process;
 	if (*str == 0) return 1;
 	if (*str == 'x' && *(str + 1) == 'd'){
 		_xd();
@@ -219,5 +220,6 @@ void main()
 		add_line(line);
 		if (command(line));
 		else print("Invalid sequence '%s'. Type 'help' to see avalible commands.\n", line);
+		keyboard.enter = terminal;
 	}
 }

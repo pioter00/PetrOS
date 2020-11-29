@@ -7,13 +7,19 @@ void keyboard_handler(struct regs *r);
 void keyboard_install();
 
 #define KBD_BUF 1024
+enum entry {
+	terminal,
+	process,
+	other
+};
 
 struct keyboard_t {
 	uint8_t caps_flag;
 	uint8_t shift_flag;
 	uint8_t ctrl_flag;
 	uint8_t alt_flag;
-	uint8_t read_flag;
+	enum entry enter;
+
 	struct 
 	{
 		char *txt;

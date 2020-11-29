@@ -80,10 +80,18 @@ unsigned int strlen(char *txt){
 }
 void *mem_set(void *dest, char c, size_t size)
 {
-		uint8_t *temp = (uint8_t *)dest;
-		while(size--) 
-			*temp++ = c;
-		return dest;
+	uint8_t *temp = (uint8_t *)dest;
+	while(size--) 
+		*temp++ = c;
+	return dest;
+}
+void *mem_cpy(void *dest, const void *src, size_t size)
+{
+    const char *sp = (const char *)src;
+    char *dp = (char *)dest;
+    while(--size)
+		*dp++ = *sp++;
+    return dest;
 }
 void printstring(char *txt)
 {

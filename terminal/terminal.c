@@ -35,8 +35,16 @@ void add_line(char *line){
 	for (unsigned int i = 0; i <= strlen(line) && i < 256; i++){
 		main_terminal.lines[main_terminal.lines_counter][i] = line[i];
 	}
-	if (main_terminal.lines_counter++ >= 29) main_terminal.lines_counter = 0;
-	main_terminal.lines_index++;
+	if (main_terminal.lines_counter++ >= 29){
+		// mem_cpy(main_terminal.lines, main_terminal.lines + 256, 29 * 256);
+		for (int i = 0;  i < 29; i++){
+			for (int j = 0; j < 256; j++){
+				main_terminal.lines[i][j] = main_terminal.lines[i + 1][j];
+			}
+		}
+		main_terminal.lines_counter = 29;
+	}
+	main_terminal.lines_index = main_terminal.lines_counter;
 }
 
 void insert_at(char c, unsigned x, unsigned y) {

@@ -54,7 +54,8 @@ unsigned char shift_key_map[128] =
   'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', 
   '"', '~', 0, '|', 'Z', 'X', 'C', 'V', 
   'B', 'N', 'M', '<', '>', '?', 0, 0, 
-  0, ' ', 0,
+  0, 
+  ' ',
   0,	/* Caps lock */
   0,	/* 59 - F1 key ... > */
   0,   0,   0,   0,   0,   0,   0,   0,
@@ -79,37 +80,53 @@ unsigned char shift_key_map[128] =
   0,	/* F12 Key */
   0,	/* All other keys are undefined */
 };
+
+void arrow_handler(uint8_t scancode){
+  uint8_t x = main_terminal.backspace_x;
+  uint8_t y = main_terminal.backspace_y;
+  if (main_terminal.lines_index > 0 && scancode == 72)
+  {
+    while (1) {
+      if (main_terminal.row == y && main_terminal.column == x) break;
+      putch('\b');
+      buf_putch('\b');
+    }
+    for (uint8_t i = 0; i < strlen(main_terminal.lines[main_terminal.lines_index - 1]); i++){
+      kbd_putchar(main_terminal.lines[main_terminal.lines_index - 1][i]);
+      buf_putch(main_terminal.lines[main_terminal.lines_index - 1][i]);
+    }
+    if (main_terminal.lines_index > 1) main_terminal.lines_index--;
+  }
+  else if (main_terminal.lines_index < main_terminal.lines_counter && main_terminal.lines_index >= 0 && scancode == 80){
+
+    while (1) {
+      if (main_terminal.row == y && main_terminal.column == x) break;
+      putch('\b');
+      buf_putch('\b');
+    }
+    // print(" i: %d s: %d ", main_terminal.lines_index, main_terminal.lines_counter);
+    for (uint8_t i = 0; i < strlen(main_terminal.lines[main_terminal.lines_index]); i++){
+      kbd_putchar(main_terminal.lines[main_terminal.lines_index][i]);
+      buf_putch(main_terminal.lines[main_terminal.lines_index][i]);
+    }
+    if (main_terminal.lines_index < main_terminal.lines_counter - 1) main_terminal.lines_index++;
+  }
+}
+
 void keyboard_handler(struct regs *r) {
     unsigned char scancode = inportb(0x60);
     kbd_set(scancode);
     if (scancode < 128) {
-      if (keyboard.shift_flag == 1) {
+      if (keyboard.enter == terminal) {
+          arrow_handler(scancode);
+      }
+      if (keyboard.shift_flag == 1 || keyboard.caps_flag == 1) {
           kbd_putchar(shift_key_map[scancode]);
           if (shift_key_map[scancode]) buf_putch(shift_key_map[scancode]);
       }
       else {
         kbd_putchar(key_map[scancode]);
         if (key_map[scancode]) buf_putch(key_map[scancode]);
-        // removing previous cmd has to be added
-        // if (main_terminal.lines_index >= 0 && scancode == 72)
-        // {
-        //   for (uint8_t i = 0; i < strlen(main_terminal.lines[main_terminal.lines_index]); i++){
-        //     kbd_putchar(main_terminal.lines[main_terminal.lines_index][i]);
-        //     buf_putch(main_terminal.lines[main_terminal.lines_index][i]);
-        //   }
-        //   main_terminal.lines_index--;
-        // }
-        // else if (main_terminal.lines_index != main_terminal.lines_counter && scancode == 80){
-        //   for (uint8_t i = 0; i < strlen(main_terminal.lines[main_terminal.lines_index]); i++){
-        //     kbd_putchar(main_terminal.lines[main_terminal.lines_index][i]);
-        //     buf_putch(main_terminal.lines[main_terminal.lines_index][i]);
-        //   }
-        //   main_terminal.lines_index++;
-        // }
-        // else{      
-        //   kbd_putchar(key_map[scancode]);
-        //   if (key_map[scancode]) buf_putch(key_map[scancode]);
-        // }
       }
     }
 }
@@ -121,7 +138,7 @@ void keyboard_install() {
 	keyboard.shift_flag = 0;
 	keyboard.ctrl_flag = 0;
 	keyboard.alt_flag = 0;
-	keyboard.read_flag = 0;
+	keyboard.enter = terminal;
 	keyboard.buffer.txt = buf;
 	keyboard.buffer.index = 0;
 	keyboard.buffer.size = 0;

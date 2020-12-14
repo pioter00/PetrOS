@@ -33,6 +33,7 @@ void timer_handler(struct regs *r)
     timer_ticks++;
     // if (timer_ticks > 1) scheluder();
     if (timer_ticks % FREQ == 0){
+        if (threads_control.mutex == RELASED) scheluder();
         if (++datetime.seconds > 59){
             datetime.seconds = 0;
             if (++datetime.minutes > 59){

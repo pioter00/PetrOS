@@ -454,208 +454,35 @@ irq_common_stub:
     add esp, 8
     iret
 
-; extern k_schedule_process
+section .scheduling
+global switch_task
+switch_task:
+    ; # Disable interrupts to avoid being interrupted mid-switch
+    cli
+    ; # Push current values so that they are popped off when we switch back to the current task
+    ; # The other general purpose registers are pushed by the C calling convention
+    push ebx
+    push esi
+    push ebp
+    push edi
+    ; # Get the current proc's state
+    mov edi, [esp + 20]
+    ; # Get the next proc's state
+    mov esi, [esp + 24]
+    ; # Save the stack pointer into the current proc's state at arch_cpu_state_t.esp
+    mov [edi + 28], esp
+    ; # Restore the stack pointer from the next proc's state from arch_cpu_state_t.esp
+    mov esp, [esi + 28]
+    ; # From now on we are using the next proc's stack
 
-; global k_switch_process
-
-; k_switch_process:
-;     pusha
-;     push ds
-;     push es
-;     push fs
-;     push gs
-
-;     mov eax, 0x10
-;     mov ds, eax
-;     mov es, eax
-;     mov fs, eax
-;     mov gs, eax
-
-;     mov eax, esp
-
-;     push eax
-;     call k_schedule_process
-;     mov esp, eax
-
-;     mov al, 0x20
-;     out 0x20, al
-
-;     pop gs
-;     pop fs
-;     pop es
-;     pop ds
-;     popa
-
-;     iret
-
-; SECTION .text
-; to co niby działało xDD =======================================================================
-; global switchTask
-; switchTask:
-;     pusha
-;     pushf
-;     mov eax, cr3 ;#Push CR3
-;     push eax
-;     mov eax, [esp + 44] ;#The first argument, where to save
-;     mov [eax + 4], ebx
-;     mov [eax + 8], ebx
-;     mov [eax + 12], ebx
-;     mov [eax + 16], ebx
-;     mov [eax + 20], ebx
-;     mov ebx, [esp + 36] ;mov 36(%esp), %ebx; #EAX
-;     mov ecx, [esp + 40] ;mov 40(%esp), %ecx #IP
-;     mov edx, [esp + 20] ;mov 20(%esp), %edx #ESP
-;     add edx, 4 ;#Remove the return value ;)
-;     mov esi, [esp + 16] ;mov 16(%esp), %esi #EBP
-;     mov edi, [esp + 4] ;mov 4(%esp), %edi #EFLAGS
-;     mov eax, ebx ;mov %ebx, (%eax)
-;     ; mov %edx, 24(%eax)
-;     ; mov %esi, 28(%eax)
-;     ; mov %ecx, 32(%eax)
-;     ; mov %edi, 36(%eax)
-;     mov [eax + 24], edx
-;     mov [eax + 28], esi
-;     mov [eax + 32], ecx
-;     mov [eax + 36], edi
-;     pop ebx ;#CR3
-;     mov [eax + 40], ebx ;mov %ebx, 40(%eax)
-;     push ebx ;#Goodbye again ;)
-;     mov eax, [esp + 48] ;mov 48(%esp), %eax ;#Now it is the new object
-;     ; mov 4(%eax), %ebx ;#EBX
-;     ; mov 8(%eax), %ecx ;#ECX
-;     ; mov 12(%eax), %edx ;#EDX
-;     ; mov 16(%eax), %esi ;#ESI
-;     ; mov 20(%eax), %edi ;#EDI
-;     ; mov 28(%eax), %ebp ;#EBP
-;     mov [eax + 4], ebx
-;     mov [eax + 8], ecx
-;     mov [eax + 12], edx
-;     mov [eax + 16], esi
-;     mov [eax + 20], edi
-;     mov [eax + 28], ebp
-;     push eax
-;     mov eax, [eax + 36] ;mov 36(%eax), %eax ;#EFLAGS
-;     push eax
-;     popf
-;     pop eax
-;     mov esp, [eax + 24] ;mov 24(%eax), %esp ;#ESP
-;     push eax
-;     mov eax, [eax + 40] ;mov 40(%eax), %eax #CR3
-;     mov cr3, eax ;mov %eax, %cr3
-;     pop eax
-;     push eax
-;     mov eax, [eax + 32] ;mov 32(%eax), %eax #EIP
-;     xchg eax, [esp];xchg (%esp), %eax #We do not have any more registers to use as tmp storage
-;     mov eax, [eax] ;mov (%eax), %eax #EAX
-;     ret
-
-; to co niby działało xDD =======================================================================
-
-; global switchTask
-; switchTask:
-
-
-
-; extern current_task
-; global switch_to_task
-; ; global switch_to_task
-; switch_to_task:
-;         ;
-;         ; clear interrupts and save context.
-;         ;
-;         cli
-;         pushad
-;         ; ;
-;         ; ; if no current task, just return.
-;         ; ;
-;         ; mov eax, [_currentTask]
-;         ; cmp eax, 0
-;         ; jz  interrupt_return
-;         ;
-;         ; save selectors.
-;         ;
-;         push ds
-;         push es
-;         push fs
-;         push gs
-;         ;
-;         ; switch to kernel segments.
-;         ;
-;         mov ax, 0x10
-;         mov ds, ax
-;         mov es, ax
-;         mov fs, ax
-;         mov gs, ax
-;         ;
-;         ; save esp.
-;         ;
-;         mov eax, [current_task]
-;         mov [eax], esp
-;         ;
-;         ; restore esp.
-;         ;
-;         mov eax, [current_task]
-;         mov esp, [eax]
-;         ;
-;         ; Call tss_set_stack (kernelSS, kernelESP).
-;         ; This code will be needed later for user tasks.
-;         ; ;
-;         ; push dword ptr [eax+8]
-;         ; push dword ptr [eax+12]
-;         ; call tss_set_stack
-;         ; add esp, 8
-;         ;
-;         ; send EOI and restore context.
-;         ;
-;         pop gs
-;         pop fs
-;         pop es
-;         pop ds
-; extern current_task_TCB
-; global switch_to_task
-
-; switch_to_task:
- 
-;     ;Save previous task's state
- 
-;     ;Notes:
-;     ;  For cdecl; EAX, ECX, and EDX are already saved by the caller and don't need to be saved again
-;     ;  EIP is already saved on the stack by the caller's "CALL" instruction
-;     ;  The task isn't able to change CR3 so it doesn't need to be saved
-;     ;  Segment registers are constants (while running kernel code) so they don't need to be saved
- 
-;     push ebx
-;     push esi
-;     push edi
-;     push ebp
- 
-;     mov edi,[current_task_TCB]    ;edi = address of the previous task's "thread control block"
-;     ; mov [edi+TCB.ESP],esp         ;Save ESP for previous task's kernel stack in the thread's TCB
- 
-;     ;Load next task's state
- 
-;     mov esi,[esp+(4+1)*4]         ;esi = address of the next task's "thread control block" (parameter passed on stack)
-;     mov [current_task_TCB],esi    ;Current task's TCB is the next task TCB
- 
-;     ; mov esp,[esi+TCB.ESP]         ;Load ESP for next task's kernel stack from the thread's TCB
-;     ; mov eax,[esi+TCB.CR3]         ;eax = address of page directory for next task
-;     ; mov ebx,[esi+TCB.ESP0]        ;ebx = address for the top of the next task's kernel stack
-;     ; mov [TSS.ESP0],ebx            ;Adjust the ESP0 field in the TSS (used by CPU for for CPL=3 -> CPL=0 privilege level changes)
-;     mov ecx,cr3                   ;ecx = previous task's virtual address space
- 
-;     cmp eax,ecx                   ;Does the virtual address space need to being changed?
-;     je .doneVAS                   ; no, virtual address space is the same, so don't reload it and cause TLB flushes
-;     mov cr3,eax                   ; yes, load the next task's virtual address space
-; .doneVAS:
- 
-;     pop ebp
-;     pop edi
-;     pop esi
-;     pop ebx
- 
-;     ret  
-
-
+    ; # Pop off saved values from next proc's stack
+    ; # The other general purpose registers are popped by the C calling convention
+    pop edi
+    pop ebp
+    pop esi
+    pop ebx ;# Re-enable interrupts
+    sti ;# Return to return address stored at start of next proc's stack
+    ret
 
 SECTION .bss
     resb 8192

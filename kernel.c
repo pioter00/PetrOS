@@ -178,13 +178,37 @@ void task2(){
 	}
 	
 }
+uint32_t stack1[4096];
+uint32_t stack2[4096];
+uint32_t stacka1[4096];
+uint32_t stacka2[4096];
+void xd1(){
+	print("xd1\n");
+}
+void xd2(){
+	print("xd2\n");
+}
+void xd3(){
+	print("xd3\n");
+}
+void xd4(){
+	print("xd4\n");
+}
 
 int command(char *str) {
 	flush();
 	keyboard.enter = process;
 	if (*str == 0) return 1;
-	if (*str == 'x' && *(str + 1) == 'd' && *(str + 2) == '1'){
-		task1();
+	if (*str == 'x' && *(str + 1) == 'd' && *(str + 2) == '1'){	
+		mutex_relase();
+		// add_task(xd1, (uint32_t)stack1, stack1);
+		// add_task(xd2, (uint32_t)stack1, stack1);
+		// add_task(xd3, (uint32_t)stack1, stack1);
+		// add_task(xd4, (uint32_t)stack1, stack1);
+		add_task(xd1, (uint32_t)stack1);
+		add_task(xd2, (uint32_t)stack1);
+		add_task(xd3, (uint32_t)stack1);
+		add_task(xd4, (uint32_t)stack1);
 		return 1;
 	}
 	if (*str == 'x' && *(str + 1) == 'd' && *(str + 2) == '2'){
@@ -229,26 +253,6 @@ void mainloop(){
 }
 //=====================================================================================================================
 
-uint32_t stack1[4096];
-uint32_t stack2[4096];
-uint32_t stacka1[4096];
-uint32_t stacka2[4096];
-void xd1(){
-	print("xd1\n");
-}
-void xd2(){
-	print("xd2\n");
-}
-void xd3(){
-	print("xd3\n");
-}
-void xd4(){
-	print("xd4\n");
-}
-
-
-
-
 
 
 void main() 
@@ -262,30 +266,13 @@ void main()
 	datetime_install();
 	timer_install();
 	keyboard_install();
-
+	threads_install();
 	ENABLE_IRQ
 	print("\tPetrOS 0.01\t\t\t");
     datetime_print();
 	print("\n\n");
 
-	threads_install();
-	add_task(xd1, (uint32_t)stack1);
-	add_task(xd2, (uint32_t)stack1);
-	add_task(xd3, (uint32_t)stack1);
-	add_task(xd4, (uint32_t)stack1);
-
-
-	// createTask(one, task1, 0x202, stack11, stack1);
-	// createTask(two, task2, 0x202, stack22, stack2);
-	// current_task = one;
-	// current_task_next = two;
-	// switchTask(&one->regs,&one->regs);
-	// task1();
-
-	// mainloop();
-	// add_task(task1, (uint32_t)stack1, stacka1, 0);
-	// add_task(task2, (uint32_t)stack2, stacka2, 1);
-	// print("%d %d %d %d %d %d %d\n", process_table[0].EIP, process_table[1].EIP, stack1, process_table[0].ESP, process_table[1].ESP, process_table[0].page_dir, process_table[1].page_dir);
+	mainloop();
 	// set_fn_col(DARK_GREY);
 	// for(int i = 0; i < WIDTH_T; i++){
 	// 	print("=");

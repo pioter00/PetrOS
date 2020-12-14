@@ -1,5 +1,6 @@
 #include "../include/keyboard.h"
 #include "../include/macros.h"
+#include "../include/threads.h"
 #include "../include/terminal.h"
 #include "../include/isr.h"
 #include "../include/irq.h"
@@ -124,6 +125,14 @@ void keyboard_handler(struct regs *r) {
           kbd_putchar(shift_key_map[scancode]);
           if (shift_key_map[scancode]) buf_putch(shift_key_map[scancode]);
       }
+      if (keyboard.ctrl_flag == 1 && key_map[scancode] == 'l'){
+        mutex_lock();
+        return;
+      }
+      if (keyboard.ctrl_flag == 1 && key_map[scancode] == 'r'){
+        mutex_relase();
+        return;
+      }
       else {
         kbd_putchar(key_map[scancode]);
         if (key_map[scancode]) buf_putch(key_map[scancode]);
@@ -204,5 +213,7 @@ void kbd_set(uint8_t code){
 	else if (code == 58 && keyboard.caps_flag == 1) keyboard.caps_flag = 0;
 	if (code == 42 || code == 54) keyboard.shift_flag = 1;
 	else if (code == 170 || code == 182) keyboard.shift_flag = 0;
+  else if (code == 29) keyboard.ctrl_flag = 1;
+  else if (code == 157) keyboard.ctrl_flag = 0;
 }
 

@@ -146,12 +146,49 @@ void _settime(){
     datetime.year = year;
 	ENABLE_IRQ
 }
+
+
+
+
+void task1(){
+	int timer_tick1 = 0;
+	while (1){
+		int temp_y = main_terminal.row;
+		int temp_x = main_terminal.column;
+		main_terminal.row = 15;
+   		main_terminal.column = 1;
+		printint_at_date(timer_tick1++);
+		main_terminal.row = temp_y;
+		main_terminal.column = temp_x;
+		sleep(100);
+		} 
+}
+
+void task2(){
+	int timer_tick2 = 0;
+	while (1){
+		int temp_y = main_terminal.row;
+		int temp_x = main_terminal.column;
+		main_terminal.row = 15;
+   		main_terminal.column = 14;
+		printint_at_date(timer_tick2++);
+		main_terminal.row = temp_y;
+		main_terminal.column = temp_x;
+		sleep(500);
+	}
+	
+}
+
 int command(char *str) {
 	flush();
 	keyboard.enter = process;
 	if (*str == 0) return 1;
-	if (*str == 'x' && *(str + 1) == 'd'){
-		_xd();
+	if (*str == 'x' && *(str + 1) == 'd' && *(str + 2) == '1'){
+		task1();
+		return 1;
+	}
+	if (*str == 'x' && *(str + 1) == 'd' && *(str + 2) == '2'){
+		// print("%d", 4/0);
 		return 1;
 	}
 	if (*str == 'r' && *(str + 1) == 'u' && *(str + 2) == 'n'){
@@ -177,6 +214,43 @@ int command(char *str) {
 	}
 	return 0;
 }
+
+
+void mainloop(){
+	while (1) {
+		CMD_LINE		
+		scan("%ss", line);
+		if (*line) add_line(line);
+		if (command(line));
+		else print("Invalid sequence '%s'. Type 'help' to see avalible commands.\n", line);
+		keyboard.enter = terminal;
+		mem_set(line, 0, 256);
+	}
+}
+//=====================================================================================================================
+
+uint32_t stack1[4096];
+uint32_t stack2[4096];
+uint32_t stacka1[4096];
+uint32_t stacka2[4096];
+void xd1(){
+	print("xd1\n");
+}
+void xd2(){
+	print("xd2\n");
+}
+void xd3(){
+	print("xd3\n");
+}
+void xd4(){
+	print("xd4\n");
+}
+
+
+
+
+
+
 void main() 
 {
 	gdt_install();
@@ -184,15 +258,34 @@ void main()
 	isrs_install();
 	irq_install();
 	terminal_initialize();
+
 	datetime_install();
 	timer_install();
 	keyboard_install();
 
 	ENABLE_IRQ
-
 	print("\tPetrOS 0.01\t\t\t");
     datetime_print();
 	print("\n\n");
+
+	threads_install();
+	add_task(xd1, (uint32_t)stack1);
+	add_task(xd2, (uint32_t)stack1);
+	add_task(xd3, (uint32_t)stack1);
+	add_task(xd4, (uint32_t)stack1);
+
+
+	// createTask(one, task1, 0x202, stack11, stack1);
+	// createTask(two, task2, 0x202, stack22, stack2);
+	// current_task = one;
+	// current_task_next = two;
+	// switchTask(&one->regs,&one->regs);
+	// task1();
+
+	// mainloop();
+	// add_task(task1, (uint32_t)stack1, stacka1, 0);
+	// add_task(task2, (uint32_t)stack2, stacka2, 1);
+	// print("%d %d %d %d %d %d %d\n", process_table[0].EIP, process_table[1].EIP, stack1, process_table[0].ESP, process_table[1].ESP, process_table[0].page_dir, process_table[1].page_dir);
 	// set_fn_col(DARK_GREY);
 	// for(int i = 0; i < WIDTH_T; i++){
 	// 	print("=");
@@ -213,13 +306,5 @@ void main()
 	// 	print("=");
 	// }
 	// print("\n");
-	while (1)
-	{
-		CMD_LINE		
-		scan("%ss", line);
-		add_line(line);
-		if (command(line));
-		else print("Invalid sequence '%s'. Type 'help' to see avalible commands.\n", line);
-		keyboard.enter = terminal;
-	}
+	// mainloop();
 }

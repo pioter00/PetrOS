@@ -25,4 +25,6 @@ void datetime_print();
 void set_frequency(int hz);
 void timer_install();
 void sleep(int ms);
+
+void printint_at_date(int a);
 #endif

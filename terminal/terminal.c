@@ -36,7 +36,6 @@ void add_line(char *line){
 		main_terminal.lines[main_terminal.lines_counter][i] = line[i];
 	}
 	if (main_terminal.lines_counter++ >= 29){
-		// mem_cpy(main_terminal.lines, main_terminal.lines + 256, 29 * 256);
 		for (int i = 0;  i < 29; i++){
 			for (int j = 0; j < 256; j++){
 				main_terminal.lines[i][j] = main_terminal.lines[i + 1][j];

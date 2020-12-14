@@ -8,7 +8,7 @@ full:
 	make run
 
 comp:
-	nasm start.asm -f elf32 -o start.o 
+	nasm start.asm -f elf32 -o start.o
 	gcc libs/std.c -c -o libs/std.o $(CFLAGS)
 	gcc libs/gdt.c -c -o libs/gdt.o $(CFLAGS)
 	gcc libs/idt.c -c -o libs/idt.o $(CFLAGS)

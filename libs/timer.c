@@ -1,5 +1,7 @@
 #include "../include/timer.h"
 #include "../include/terminal.h"
+#include "../include/macros.h"
+#include "../include/threads.h"
 #include "../include/std.h"
 #include "../include/irq.h"
 #include "../include/isr.h"
@@ -12,7 +14,7 @@ void set_frequency(int hz)
     outportb(0x40, divisor >> 8);
 }
 
-volatile unsigned int timer_ticks = 0;
+
 
 void update_time(){
     int temp_y = main_terminal.row;
@@ -24,9 +26,12 @@ void update_time(){
     main_terminal.column = temp_x;
 }
 
+volatile unsigned int timer_ticks = 0;
+
 void timer_handler(struct regs *r)
 {
     timer_ticks++;
+    // if (timer_ticks > 1) scheluder();
     if (timer_ticks % FREQ == 0){
         if (++datetime.seconds > 59){
             datetime.seconds = 0;
@@ -54,7 +59,7 @@ void timer_install()
 }
 
 void sleep(int ms){
-	unsigned long sleep_ticks = timer_ticks + ms * (1000 / FREQ);
+	unsigned long sleep_ticks = timer_ticks + ms/(1000 / FREQ);
     while (timer_ticks < sleep_ticks);
 }
 void datetime_install() {

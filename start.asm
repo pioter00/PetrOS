@@ -454,7 +454,7 @@ irq_common_stub:
     add esp, 8
     iret
 
-section .scheduling
+section .text
 global switch_task
 switch_task:
     ; # Disable interrupts to avoid being interrupted mid-switch

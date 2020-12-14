@@ -178,10 +178,9 @@ void task2(){
 	}
 	
 }
-uint32_t stack1[4096];
-uint32_t stack2[4096];
-uint32_t stacka1[4096];
-uint32_t stacka2[4096];
+uint32_t stack1[THREAD_STACK_SIZE];
+uint32_t stack2[THREAD_STACK_SIZE];
+
 void xd1(){
 	print("xd1\n");
 }
@@ -205,10 +204,7 @@ int command(char *str) {
 		// add_task(xd2, (uint32_t)stack1, stack1);
 		// add_task(xd3, (uint32_t)stack1, stack1);
 		// add_task(xd4, (uint32_t)stack1, stack1);
-		add_task(xd1, (uint32_t)stack1);
-		add_task(xd2, (uint32_t)stack1);
-		add_task(xd3, (uint32_t)stack1);
-		add_task(xd4, (uint32_t)stack1);
+		add_task(task1, (uint32_t)stack1);
 		return 1;
 	}
 	if (*str == 'x' && *(str + 1) == 'd' && *(str + 2) == '2'){
@@ -253,8 +249,6 @@ void mainloop(){
 }
 //=====================================================================================================================
 
-
-
 void main() 
 {
 	gdt_install();
@@ -262,7 +256,6 @@ void main()
 	isrs_install();
 	irq_install();
 	terminal_initialize();
-
 	datetime_install();
 	timer_install();
 	keyboard_install();
@@ -271,8 +264,9 @@ void main()
 	print("\tPetrOS 0.01\t\t\t");
     datetime_print();
 	print("\n\n");
-
-	mainloop();
+	// mainloop();
+	add_task(task1, (uint32_t) stack1);
+	add_task(task2, (uint32_t) stack2);
 	// set_fn_col(DARK_GREY);
 	// for(int i = 0; i < WIDTH_T; i++){
 	// 	print("=");

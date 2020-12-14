@@ -4,6 +4,9 @@
 #include <stdint.h>
 #include "isr.h"
 
+
+#define THREAD_STACK_SIZE 4096
+
 enum process_state{
 	RUNNING,
 	SLEEPING
@@ -35,6 +38,8 @@ void add_task(void (*fun_name)(void), uint32_t stack_address);
 void scheluder();
 void mutex_lock();
 void mutex_relase();
+
+extern void switch_task(struct regs* current, struct regs* next);
 
 
 #endif

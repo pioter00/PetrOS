@@ -31,9 +31,9 @@ volatile unsigned int timer_ticks = 0;
 void timer_handler(struct regs *r)
 {
     timer_ticks++;
-    // if (timer_ticks > 1) scheluder();
+    if (threads_control.mutex == RELASED) scheluder();
     if (timer_ticks % FREQ == 0){
-        if (threads_control.mutex == RELASED) scheluder();
+        
         if (++datetime.seconds > 59){
             datetime.seconds = 0;
             if (++datetime.minutes > 59){
@@ -52,6 +52,7 @@ void timer_handler(struct regs *r)
         }
         update_time();
     }
+    mutex_relase();
 }
 void timer_install()
 {

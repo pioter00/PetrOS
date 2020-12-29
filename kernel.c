@@ -148,77 +148,26 @@ void _settime(){
 }
 
 
-
-
-// void task1(){
-// 	int timer_tick1 = 0;
-// 	while (1){
-// 		mutex_lock();
-// 		int temp_y = main_terminal.row;
-// 		int temp_x = main_terminal.column;
-// 		main_terminal.row = 15;
-//    		main_terminal.column = 1;
-// 		printint_at_date(timer_tick1++);
-// 		main_terminal.row = temp_y;
-// 		main_terminal.column = temp_x;
-// 		mutex_relase();
-// 		sleep(100);
-// 		} 
-// }
-// void timer(){
-// 	while(1){
-// 		task_schedule(&tim, &t1);
-// 		task_schedule(&t1, &t2);
-// 		task_schedule(&t2, &tim);
-// 	}
-// }
-// void task2(){
-// 	int timer_tick2 = 0;
-// 	while (1){
-// 		mutex_lock();
-// 		int temp_y = main_terminal.row;
-// 		int temp_x = main_terminal.column;
-// 		main_terminal.row = 15;
-//    		main_terminal.column = 14;
-// 		printint_at_date(timer_tick2++);
-// 		main_terminal.row = temp_y;
-// 		main_terminal.column = temp_x;
-// 		mutex_relase();
-// 		sleep(500);
-// 	}
-	
-// }
-// extern uint32_t stack1[THREAD_STACK_SIZE];
-// extern uint32_t stack2[THREAD_STACK_SIZE];
-
-void xd1(){
-	print("xd1\n");
+void task3(int y, int ms){
+	int timer_tick2 = 0;
+	while (1){
+		mutex_lock();
+		int temp_y = main_terminal.row;
+		int temp_x = main_terminal.column;
+		main_terminal.row = y;
+   		main_terminal.column = 70;
+		printint_at_date(timer_tick2++);
+		main_terminal.row = temp_y;
+		main_terminal.column = temp_x;
+		mutex_relase();
+		sleep(ms);
+	}
 }
-void xd2(){
-	print("xd2\n");
-}
-void xd3(){
-	print("xd3\n");
-}
-void xd4(){
-	print("xd4\n");
-}
-uint32_t stack1[THREAD_STACK_SIZE];
-uint32_t stack2[THREAD_STACK_SIZE];
-uint32_t stacktim[THREAD_STACK_SIZE];
 
 int command(char *str) {
 	flush();
 	keyboard.enter = process;
 	if (*str == 0) return 1;
-	if (*str == 'x' && *(str + 1) == 'd' && *(str + 2) == '1'){	
-		mutex_relase();
-		return 1;
-	}
-	if (*str == 'x' && *(str + 1) == 'd' && *(str + 2) == '2'){
-		// print("%d", 4/0);
-		return 1;
-	}
 	if (*str == 'r' && *(str + 1) == 'u' && *(str + 2) == 'n'){
 		_run();
 		return 1;
@@ -236,14 +185,65 @@ int command(char *str) {
 		_clear();
 		return 1;
 	}
+	else if (*str == 't' && *(str + 1) == 'i' && *(str + 2) == 'm' && *(str + 3) == 'e' && *(str + 4) == 'r'){
+		int y = 0;
+		int ms = 0;
+		print("Set y: ");
+		scan("%d", &y);
+		print("Set interval in ms: ");
+		scan("%d", &ms);
+		print("%d, %d\n", y, ms);
+		void (*ptr)(int, int);
+		ptr = task3;
+		mem_cpy(ptr, &y, sizeof(int));
+		ptr += sizeof(int);
+		mem_cpy(ptr, &ms, sizeof(int));
+		ptr += sizeof(int);
+		DISABLE_IRQ
+		add_thread((uint32_t)ptr - 8, "Task3");	
+		ENABLE_IRQ
+		return 1;
+	}
 	else if (*str == 's' && *(str + 1) == 'e' && *(str + 2) == 't' && *(str + 3) == 't' && *(str + 4) == 'i' && *(str + 5) == 'm' && *(str + 6) == 'e'){
 		_settime();
 		return 1;
 	}
+	else if (*str == 't' && *(str + 1) == 'h' && *(str + 2) == 'r'&& *(str + 3) == 'e' && *(str + 4) == 'a' && *(str + 5) == 'd' && *(str + 6) == 's'){
+		display_threads();
+		return 1;
+	}
 	return 0;
 }
-
-
+void task1(){
+	int timer_tick1 = 0;
+	while (1){
+		mutex_lock();
+		int temp_y = main_terminal.row;
+		int temp_x = main_terminal.column;
+		main_terminal.row = 15;
+   		main_terminal.column = 1;
+		printint_at_date(timer_tick1++);
+		main_terminal.row = temp_y;
+		main_terminal.column = temp_x;
+		mutex_relase();
+		sleep(100);
+	} 
+}
+void task2(){
+	int timer_tick2 = 0;
+	while (1){
+		mutex_lock();
+		int temp_y = main_terminal.row;
+		int temp_x = main_terminal.column;
+		main_terminal.row = 15;
+   		main_terminal.column = 14;
+		printint_at_date(timer_tick2++);
+		main_terminal.row = temp_y;
+		main_terminal.column = temp_x;
+		mutex_relase();
+		sleep(500);
+	}
+}
 void mainloop(){
 	while (1) {
 		CMD_LINE		
@@ -269,23 +269,13 @@ void main()
 	timer_install();
 	keyboard_install();
 	threads_install();
-	ENABLE_IRQ
 	print("\tPetrOS 0.01\t\t\t");
     datetime_print();
 	print("\n\n");
-
-	// mainloop();
-
-
-
-	
-	// add_task(task1, (uint32_t) stack1);
-	// add_task(task2, (uint32_t) stack2);
-
-	create_thread(&tim, stacktim, (uint32_t)mainloop);
-	// while(1){
-	// 	scheluder();
-	// }
+	add_thread((uint32_t)mainloop, "mainloop");
+	add_thread((uint32_t)task1, "Task1");
+    add_thread((uint32_t)task2, "Task2");
+	ENABLE_IRQ
 	// set_fn_col(DARK_GREY);
 	// for(int i = 0; i < WIDTH_T; i++){
 	// 	print("=");

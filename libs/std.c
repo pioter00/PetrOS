@@ -73,7 +73,7 @@ void move_csr() {
 	outportb(0x3D5, temp);
 }
 
-unsigned int strlen(char *txt){
+unsigned int strlen(const char *txt){
 	unsigned int i = 0;
 	while (*txt++) i++;
 	return i;

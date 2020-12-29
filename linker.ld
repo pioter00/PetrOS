@@ -9,7 +9,6 @@ SECTIONS
     code = .;
     *(.text)
     *(.rodata)
-    *(.scheduling)
     . = ALIGN(4096);
   }
   .data : AT(phys + (data - code))

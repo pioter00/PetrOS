@@ -4,29 +4,45 @@
 #include <stdint.h>
 #include "isr.h"
 
-
 #define THREAD_STACK_SIZE 4096
-
-enum process_state{
-	RUNNING,
-	SLEEPING
-};
 
 enum mutex_state {
     RELASED,
     LOCKED
 };
 
-struct thread_t
+enum threads_state_t
 {
-    struct regs *registrers;
-	void (*fun_name)(void);
-    enum process_state state;
-	uint8_t p_id;
+    THREAD_WAITING_FOR_START,
+    THREAD_READY,
+    THREAD_RUNNING,
+    THREAD_RIP
 };
+
+struct threads_t
+{
+    uint32_t esp;
+    uint32_t stack;
+    uint32_t task;
+    uint32_t thread_id;
+    uint32_t priority;
+    uint32_t process_pid;
+    volatile enum threads_state_t state;
+};
+
+void create_thread(struct threads_t *new_thread, uint32_t *stack, uint32_t task_addr);
+void task_schedule(struct threads_t *current, struct threads_t *next);
+extern void switch_stacks_and_jump(uint32_t current_thread, uint32_t next_thread);
+extern void switch_stacks(uint32_t current_thread, uint32_t next_thread);
+
+
+struct threads_t t1;
+struct threads_t t2;
+struct threads_t tim;
+
 struct threads_control_t
 {
-    struct thread_t thread[16];
+    // struct thread_t thread[16];
     uint8_t cur_task_index;
     uint8_t active_threads;
 	uint8_t running_task_id;
@@ -34,12 +50,11 @@ struct threads_control_t
 } threads_control;
 
 void threads_install();
-void add_task(void (*fun_name)(void), uint32_t stack_address);
 void scheluder();
 void mutex_lock();
 void mutex_relase();
 
-extern void switch_task(struct regs* current, struct regs* next);
+
 
 
 #endif

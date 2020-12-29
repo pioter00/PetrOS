@@ -31,7 +31,6 @@ volatile unsigned int timer_ticks = 0;
 void timer_handler(struct regs *r)
 {
     timer_ticks++;
-    if (threads_control.mutex == RELASED) scheluder();
     if (timer_ticks % FREQ == 0){
         
         if (++datetime.seconds > 59){

@@ -150,36 +150,46 @@ void _settime(){
 
 
 
-void task1(){
-	int timer_tick1 = 0;
-	while (1){
-		int temp_y = main_terminal.row;
-		int temp_x = main_terminal.column;
-		main_terminal.row = 15;
-   		main_terminal.column = 1;
-		printint_at_date(timer_tick1++);
-		main_terminal.row = temp_y;
-		main_terminal.column = temp_x;
-		sleep(100);
-		} 
-}
-
-void task2(){
-	int timer_tick2 = 0;
-	while (1){
-		int temp_y = main_terminal.row;
-		int temp_x = main_terminal.column;
-		main_terminal.row = 15;
-   		main_terminal.column = 14;
-		printint_at_date(timer_tick2++);
-		main_terminal.row = temp_y;
-		main_terminal.column = temp_x;
-		sleep(500);
-	}
+// void task1(){
+// 	int timer_tick1 = 0;
+// 	while (1){
+// 		mutex_lock();
+// 		int temp_y = main_terminal.row;
+// 		int temp_x = main_terminal.column;
+// 		main_terminal.row = 15;
+//    		main_terminal.column = 1;
+// 		printint_at_date(timer_tick1++);
+// 		main_terminal.row = temp_y;
+// 		main_terminal.column = temp_x;
+// 		mutex_relase();
+// 		sleep(100);
+// 		} 
+// }
+// void timer(){
+// 	while(1){
+// 		task_schedule(&tim, &t1);
+// 		task_schedule(&t1, &t2);
+// 		task_schedule(&t2, &tim);
+// 	}
+// }
+// void task2(){
+// 	int timer_tick2 = 0;
+// 	while (1){
+// 		mutex_lock();
+// 		int temp_y = main_terminal.row;
+// 		int temp_x = main_terminal.column;
+// 		main_terminal.row = 15;
+//    		main_terminal.column = 14;
+// 		printint_at_date(timer_tick2++);
+// 		main_terminal.row = temp_y;
+// 		main_terminal.column = temp_x;
+// 		mutex_relase();
+// 		sleep(500);
+// 	}
 	
-}
-uint32_t stack1[THREAD_STACK_SIZE];
-uint32_t stack2[THREAD_STACK_SIZE];
+// }
+// extern uint32_t stack1[THREAD_STACK_SIZE];
+// extern uint32_t stack2[THREAD_STACK_SIZE];
 
 void xd1(){
 	print("xd1\n");
@@ -193,6 +203,9 @@ void xd3(){
 void xd4(){
 	print("xd4\n");
 }
+uint32_t stack1[THREAD_STACK_SIZE];
+uint32_t stack2[THREAD_STACK_SIZE];
+uint32_t stacktim[THREAD_STACK_SIZE];
 
 int command(char *str) {
 	flush();
@@ -200,11 +213,6 @@ int command(char *str) {
 	if (*str == 0) return 1;
 	if (*str == 'x' && *(str + 1) == 'd' && *(str + 2) == '1'){	
 		mutex_relase();
-		// add_task(xd1, (uint32_t)stack1, stack1);
-		// add_task(xd2, (uint32_t)stack1, stack1);
-		// add_task(xd3, (uint32_t)stack1, stack1);
-		// add_task(xd4, (uint32_t)stack1, stack1);
-		add_task(task1, (uint32_t)stack1);
 		return 1;
 	}
 	if (*str == 'x' && *(str + 1) == 'd' && *(str + 2) == '2'){
@@ -249,6 +257,7 @@ void mainloop(){
 }
 //=====================================================================================================================
 
+
 void main() 
 {
 	gdt_install();
@@ -264,9 +273,19 @@ void main()
 	print("\tPetrOS 0.01\t\t\t");
     datetime_print();
 	print("\n\n");
+
 	// mainloop();
-	add_task(task1, (uint32_t) stack1);
-	add_task(task2, (uint32_t) stack2);
+
+
+
+	
+	// add_task(task1, (uint32_t) stack1);
+	// add_task(task2, (uint32_t) stack2);
+
+	create_thread(&tim, stacktim, (uint32_t)mainloop);
+	// while(1){
+	// 	scheluder();
+	// }
 	// set_fn_col(DARK_GREY);
 	// for(int i = 0; i < WIDTH_T; i++){
 	// 	print("=");

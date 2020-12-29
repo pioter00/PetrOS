@@ -454,36 +454,67 @@ irq_common_stub:
     add esp, 8
     iret
 
-section .text
-global switch_task
-switch_task:
-    ; # Disable interrupts to avoid being interrupted mid-switch
-    cli
-    ; # Push current values so that they are popped off when we switch back to the current task
-    ; # The other general purpose registers are pushed by the C calling convention
-    push ebx
-    push esi
-    push ebp
-    push edi
-    ; # Get the current proc's state
-    mov edi, [esp + 20]
-    ; # Get the next proc's state
-    mov esi, [esp + 24]
-    ; # Save the stack pointer into the current proc's state at arch_cpu_state_t.esp
-    mov [edi + 28], esp
-    ; # Restore the stack pointer from the next proc's state from arch_cpu_state_t.esp
-    mov esp, [esi + 28]
-    ; # From now on we are using the next proc's stack
 
-    ; # Pop off saved values from next proc's stack
-    ; # The other general purpose registers are popped by the C calling convention
+SECTION .text
+global switch_stacks_and_jump
+global switch_stacks
+
+
+switch_stacks_and_jump:
+		
+	pushf
+	push eax	
+	push ebx
+	push ecx
+	push edx
+	push esi
+	push edi
+	push ebp
+	
+	mov eax, [esp + 36]
+	mov [eax + 0], esp 
+
+	mov eax, [esp + 40] 
+    mov esp, [eax + 0]
+	mov eax, [eax + 8] 
+
+	sti
+
+    jmp eax
+
+    
+
+switch_stacks:
+
+
+	pushf
+	push eax	
+	push ebx
+	push ecx
+	push edx
+	push esi
+	push edi
+	push ebp
+	
+	mov eax, [esp + 36]
+	mov [eax + 0], esp 
+
+	mov eax, [esp + 40] 
+    mov esp, [eax + 0]
+	
+
+	pop ebp
     pop edi
-    pop ebp
     pop esi
-    pop ebx ;# Re-enable interrupts
-    sti ;# Return to return address stored at start of next proc's stack
-    ret
+    pop edx
+    pop ecx
+    pop ebx
+    pop eax
+	popf
 
+	sti
+
+    ret
 SECTION .bss
     resb 8192
 _sys_stack:

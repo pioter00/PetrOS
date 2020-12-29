@@ -13,39 +13,31 @@ void threads_install(){
 	threads_control.mutex = LOCKED;
 }
 
-void add_task(void (*fun)(void), uint32_t stack_address){
-
-	uint32_t* process_kernel_stack = (uint32_t*)stack_address;
-	struct regs *cpu_state = cur_proc.registrers;
-	cpu_state->ebp = stack_address;
-	cpu_state->esp = stack_address + THREAD_STACK_SIZE - 4 * 5;
-	cpu_state->edi = 0;
-	cpu_state->ebx = 0;
-	cpu_state->esi = 0;
-
-    process_kernel_stack[THREAD_STACK_SIZE/4 - 5] = cpu_state->ebp;
-    process_kernel_stack[THREAD_STACK_SIZE/4 - 4] = cpu_state->edi;
-    process_kernel_stack[THREAD_STACK_SIZE/4 - 3] = cpu_state->esi;
-    process_kernel_stack[THREAD_STACK_SIZE/4 - 2] = cpu_state->ebx;
-    process_kernel_stack[THREAD_STACK_SIZE/4 - 1] = (uint32_t)fun;
-
-    cur_proc.state = RUNNING;
-	cur_proc.fun_name = fun;
-	cur_proc.p_id = threads_control.cur_task_index++;
-	print("add task id: %d\n", cur_proc.p_id);
-    threads_control.active_threads++;
-}
 void scheluder(){
-	// save old process regs
-	uint8_t temp = threads_control.running_task_id++;
-	if (threads_control.running_task_id >= threads_control.active_threads) threads_control.running_task_id = 0;
-	switch_task(threads_control.thread[temp].registrers, threads_control.thread[threads_control.running_task_id].registrers);
-	// print("switch to task id: %d\n", threads_control.running_task_id);
-	// run other task by running task id
+
 }
 void mutex_lock(){
 	threads_control.mutex = LOCKED;
 }
 void mutex_relase(){
 	threads_control.mutex = RELASED;
+}
+
+void create_thread(struct threads_t *new_thread, uint32_t *stack, uint32_t task_addr){
+	
+    new_thread->state = THREAD_WAITING_FOR_START;
+    new_thread->stack = (uint32_t)stack;
+    new_thread->esp = new_thread->stack + THREAD_STACK_SIZE;
+    new_thread->task = task_addr;
+    new_thread->priority = 20;
+}
+void task_schedule(struct threads_t *current, struct threads_t *next){
+	if(next->state == THREAD_WAITING_FOR_START)
+    {
+        next->state = THREAD_READY;
+        switch_stacks_and_jump((uint32_t)current, (uint32_t)next);
+    }
+    else if(next->state == THREAD_READY){
+        switch_stacks((uint32_t)current, (uint32_t)next);
+    }
 }

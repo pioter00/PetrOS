@@ -3,6 +3,8 @@
 #include "../include/terminal.h"
 #include "../include/macros.h"
 #include "../include/std.h"
+#include "../include/threads.h"
+#include "../include/keyboard.h"
 
 uint8_t combine_colors(enum colors fg, enum colors bg) {
 	return fg | bg << 4;
@@ -17,6 +19,19 @@ void set_bg_col(enum colors col){
 void set_fn_col(enum colors col){
 	main_terminal.fncolor = col;
 }
+void mainloop(){
+	char line[256] = {0};
+	while (1) {
+		CMD_LINE		
+		scan("%ss", line);
+		if (*line) add_line(line);
+		if (command(line));
+		else print("Invalid sequence '%s'. Type 'help' to see avalible commands.\n", line);
+		keyboard.enter = terminal;
+		mem_set(line, 0, 256);
+	}
+}
+
 void terminal_initialize() {
     main_terminal.row = 0;
     main_terminal.column = 0;
@@ -29,6 +44,11 @@ void terminal_initialize() {
 	set_bg_col(BLACK);
 	set_fn_col(LIGHT_GREY);
 	main_terminal.color = combine_colors(main_terminal.fncolor, main_terminal.bgcolor);
+	print("\tPetrOS 0.01\t\t\t");
+    datetime_print();
+	print("\n\n");
+	add_thread((uint32_t)mainloop, "mainloop");
+	ENABLE_IRQ
 }
 
 void add_line(char *line){

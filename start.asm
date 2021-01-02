@@ -459,18 +459,10 @@ SECTION .text
 global switch_stacks_and_jump
 global switch_stacks
 
-
 switch_stacks_and_jump:
 		
-	pushf
-	push eax	
-	push ebx
-	push ecx
-	push edx
-	push esi
-	push edi
-	push ebp
-	
+    pushad
+
 	mov eax, [esp + 36]
 	mov [eax + 0], esp 
 
@@ -482,35 +474,17 @@ switch_stacks_and_jump:
 
     jmp eax
 
-    
-
 switch_stacks:
 
+	pushad
 
-	pushf
-	push eax	
-	push ebx
-	push ecx
-	push edx
-	push esi
-	push edi
-	push ebp
-	
 	mov eax, [esp + 36]
 	mov [eax + 0], esp 
 
 	mov eax, [esp + 40] 
     mov esp, [eax + 0]
-	
 
-	pop ebp
-    pop edi
-    pop esi
-    pop edx
-    pop ecx
-    pop ebx
-    pop eax
-	popf
+    popa
 
 	sti
 

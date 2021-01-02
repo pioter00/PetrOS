@@ -67,11 +67,14 @@ int program(){
 char line[256] = {0};
 
 char *commands[] = {
-	"run",
-	"echo",
-	"help",
-	"settime",
-	"clear",
+	"- run",
+	"- echo",
+	"- help",
+	"- settime",
+	"- clear",
+	"- timer",
+	"- threads",
+	"- kill",
 	NULL
 };
 
@@ -80,9 +83,7 @@ void _run(){
 	print("returned value from program: %d\n", err_code);
 	flush();
 }
-void _xd(){
-	print("test threads\n");
-}
+
 void _clear(){
 	mem_set(main_terminal.buffer + WIDTH_T * 2, 0, WIDTH_T * (WIDTH_T - 2) * 2);
 	main_terminal.column = 0;
@@ -146,10 +147,13 @@ void _settime(){
     datetime.year = year;
 	ENABLE_IRQ
 }
+uint32_t timer_y = 0, timer_ms = 0;
 
-
-void task3(int y, int ms){
+void _timer(void){
 	int timer_tick2 = 0;
+	mutex_lock();
+	uint32_t y = timer_y, ms = timer_ms;
+	mutex_relase();
 	while (1){
 		mutex_lock();
 		int temp_y = main_terminal.row;
@@ -163,87 +167,116 @@ void task3(int y, int ms){
 		sleep(ms);
 	}
 }
+void _kill(uint32_t id){
+    if (id > threads_control.active_threads || id == 0) return;
+    threads_control.thread[id].state = THREAD_TERMINATED;
+	threads_control.active_threads--;
+    scheduler();
+}
+void _term(void){
+	int timer_tick2 = 0;
+	mutex_lock();
+	uint32_t y = timer_y, ms = timer_ms;
+	mutex_relase();
+	int i = 0;
+	while (i < y){
+		mutex_lock();
+		int temp_y = main_terminal.row;
+		int temp_x = main_terminal.column;
+		main_terminal.row = y;
+   		main_terminal.column = 70;
+		printint_at_date(timer_tick2++);
+		main_terminal.row = temp_y;
+		main_terminal.column = temp_x;
+		mutex_relase();
+		sleep(ms);
+		i++;
+	}
+}
 
 int command(char *str) {
 	flush();
 	keyboard.enter = process;
 	if (*str == 0) return 1;
-	if (*str == 'r' && *(str + 1) == 'u' && *(str + 2) == 'n'){
+	else if (*str == 'r' && *(str + 1) == 'u' && *(str + 2) == 'n' && *(str + 3) == 0){
 		_run();
 		return 1;
 	}
-	else if (*str == 'e' && *(str + 1) == 'c' && *(str + 2) == 'h' && *(str + 3) == 'o'){
+	else if (*str == 'e' && *(str + 1) == 'c' && *(str + 2) == 'h' && *(str + 3) == 'o' && *(str + 4) == 0){
 		if (*(str + 4) == 0) return 1;
 		_echo(str + 5);
 		return 1;
 	}
-	else if (*str == 'h' && *(str + 1) == 'e' && *(str + 2) == 'l' && *(str + 3) == 'p'){
+	else if (*str == 'h' && *(str + 1) == 'e' && *(str + 2) == 'l' && *(str + 3) == 'p' && *(str + 4) == 0){
 		_help();
 		return 1;
 	}
-	else if (*str == 'c' && *(str + 1) == 'l' && *(str + 2) == 'e' && *(str + 3) == 'a' && *(str + 4) == 'r'){
-		_clear();
+	else if (*str == 'k' && *(str + 1) == 'i' && *(str + 2) == 'l' && *(str + 3) == 'l' && *(str + 4) == 0){
+		int s;
+		print("Enter thread id: ");
+		if (!scan("%d", &s) || s < 1){
+			print("Invalid value!\n");
+			return 1;
+		}
+		_kill(s);
 		return 1;
 	}
-	else if (*str == 't' && *(str + 1) == 'i' && *(str + 2) == 'm' && *(str + 3) == 'e' && *(str + 4) == 'r'){
+	else if (*str == 't' && *(str + 1) == 'e' && *(str + 2) == 'r' && *(str + 3) == 'm' && *(str + 4) == 0){
 		int y = 0;
 		int ms = 0;
 		print("Set y: ");
-		scan("%d", &y);
+		if (!scan("%d", &y) || y < 0 || y >= 25){
+			print("Invalid value!\n");
+			return 1;
+		} 
 		print("Set interval in ms: ");
-		scan("%d", &ms);
-		print("%d, %d\n", y, ms);
-		void (*ptr)(int, int);
-		ptr = task3;
-		mem_cpy(ptr, &y, sizeof(int));
-		ptr += sizeof(int);
-		mem_cpy(ptr, &ms, sizeof(int));
-		ptr += sizeof(int);
+		if (!scan("%d", &ms) || ms < 0){
+			print("Invalid value!\n");
+			return 1;
+		} 
 		DISABLE_IRQ
-		add_thread((uint32_t)ptr - 8, "Task3");	
+		timer_y = y;
+		timer_ms = ms;
+		add_thread((uint32_t)_term, "term");	
 		ENABLE_IRQ
 		return 1;
 	}
-	else if (*str == 's' && *(str + 1) == 'e' && *(str + 2) == 't' && *(str + 3) == 't' && *(str + 4) == 'i' && *(str + 5) == 'm' && *(str + 6) == 'e'){
+	else if (*str == 'c' && *(str + 1) == 'l' && *(str + 2) == 'e' && *(str + 3) == 'a' && *(str + 4) == 'r' && *(str + 5) == 0){
+		_clear();
+		return 1;
+	}
+	else if (*str == 't' && *(str + 1) == 'i' && *(str + 2) == 'm' && *(str + 3) == 'e' && *(str + 4) == 'r' && *(str + 5) == 0){
+		int y = 0;
+		int ms = 0;
+		print("Set y: ");
+		if (!scan("%d", &y) || y < 0 || y >= 25){
+			print("Invalid value!\n");
+			return 1;
+		} 
+		print("Set interval in ms: ");
+		if (!scan("%d", &ms) || ms < 0){
+			print("Invalid value!\n");
+			return 1;
+		} 
+		DISABLE_IRQ
+		timer_y = y;
+		timer_ms = ms;
+		add_thread((uint32_t)_timer, "timer");	
+		ENABLE_IRQ
+		return 1;
+	}
+
+	else if (*str == 's' && *(str + 1) == 'e' && *(str + 2) == 't' && *(str + 3) == 't' && *(str + 4) == 'i' && *(str + 5) == 'm' && *(str + 6) == 'e' && *(str + 7) == 0){
 		_settime();
 		return 1;
 	}
-	else if (*str == 't' && *(str + 1) == 'h' && *(str + 2) == 'r'&& *(str + 3) == 'e' && *(str + 4) == 'a' && *(str + 5) == 'd' && *(str + 6) == 's'){
+	else if (*str == 't' && *(str + 1) == 'h' && *(str + 2) == 'r'&& *(str + 3) == 'e' && *(str + 4) == 'a' && *(str + 5) == 'd' && *(str + 6) == 's' && *(str + 7) == 0){
 		display_threads();
 		return 1;
 	}
 	return 0;
 }
-void task1(){
-	int timer_tick1 = 0;
-	while (1){
-		mutex_lock();
-		int temp_y = main_terminal.row;
-		int temp_x = main_terminal.column;
-		main_terminal.row = 15;
-   		main_terminal.column = 1;
-		printint_at_date(timer_tick1++);
-		main_terminal.row = temp_y;
-		main_terminal.column = temp_x;
-		mutex_relase();
-		sleep(100);
-	} 
-}
-void task2(){
-	int timer_tick2 = 0;
-	while (1){
-		mutex_lock();
-		int temp_y = main_terminal.row;
-		int temp_x = main_terminal.column;
-		main_terminal.row = 15;
-   		main_terminal.column = 14;
-		printint_at_date(timer_tick2++);
-		main_terminal.row = temp_y;
-		main_terminal.column = temp_x;
-		mutex_relase();
-		sleep(500);
-	}
-}
+
 void mainloop(){
 	while (1) {
 		CMD_LINE		
@@ -256,7 +289,6 @@ void mainloop(){
 	}
 }
 //=====================================================================================================================
-
 
 void main() 
 {
@@ -273,8 +305,6 @@ void main()
     datetime_print();
 	print("\n\n");
 	add_thread((uint32_t)mainloop, "mainloop");
-	add_thread((uint32_t)task1, "Task1");
-    add_thread((uint32_t)task2, "Task2");
 	ENABLE_IRQ
 	// set_fn_col(DARK_GREY);
 	// for(int i = 0; i < WIDTH_T; i++){
@@ -296,5 +326,4 @@ void main()
 	// 	print("=");
 	// }
 	// print("\n");
-	// mainloop();
 }

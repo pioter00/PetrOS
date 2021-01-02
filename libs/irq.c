@@ -69,10 +69,5 @@ void irq_handler(struct regs *r) {
         outportb(0xA0, 0x20);
     }
     outportb(0x20, 0x20);
-    if (threads_control.active_threads > 0) {
-        unsigned temp = threads_control.thread_index;
-        unsigned temp1 = threads_control.thread[threads_control.thread_index].next_thread_id;
-        threads_control.thread_index = temp1;
-        if (threads_control.mutex == RELASED) task_switch(&threads_control.thread[temp], &threads_control.thread[temp1]);
-    }
+    scheduler();
 }

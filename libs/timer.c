@@ -51,7 +51,6 @@ void timer_handler(struct regs *r)
         }
         update_time();
     }
-    mutex_relase();
 }
 void timer_install()
 {
@@ -60,8 +59,8 @@ void timer_install()
 }
 
 void sleep(int ms){
-	unsigned long sleep_ticks = timer_ticks + ms/(1000 / FREQ);
-    while (timer_ticks < sleep_ticks);
+	unsigned long sleep_ticks = timer_ticks + ms / (1000 / FREQ);
+    while (timer_ticks <= sleep_ticks);
 }
 void datetime_install() {
     datetime.seconds = 0;
@@ -112,7 +111,6 @@ void printstring_at_date(char *txt)
 	}
 }
 void datetime_print(){
-    // print("%d/0%d/%d  %d:0%d:0%d", datetime.day, datetime.month, datetime.year, datetime.hours, datetime.minutes, datetime.seconds);
     if (datetime.day > 9) printint_at_date(datetime.day);
     else {
         printint_at_date(0);

@@ -5,6 +5,7 @@
 #include "../include/std.h"
 #include "../include/irq.h"
 #include "../include/isr.h"
+#include "../include/cmos.h"
 
 void set_frequency(int hz)
 {
@@ -20,7 +21,7 @@ void update_time(){
     int temp_y = main_terminal.row;
     int temp_x = main_terminal.column;
     main_terminal.row = 0;
-    main_terminal.column = 27;
+    main_terminal.column = 23;
     datetime_print();
     main_terminal.row = temp_y;
     main_terminal.column = temp_x;
@@ -31,24 +32,8 @@ volatile unsigned int timer_ticks = 0;
 void timer_handler(struct regs *r)
 {
     timer_ticks++;
-    if (timer_ticks % FREQ == 0){
-        
-        if (++datetime.seconds > 59){
-            datetime.seconds = 0;
-            if (++datetime.minutes > 59){
-                datetime.minutes = 0;
-                if (++datetime.hours > 23){
-                    datetime.hours = 0;
-                    if (++datetime.day > 31){
-                        datetime.day = 1;
-                        if (++datetime.month > 12){
-                            datetime.month = 1;
-                            datetime.year++;
-                        }
-                    }
-                }
-            }
-        }
+    if (datetime.seconds != convert_from_binary(cmos_read(CMOS_SECONDS))){
+        read_full_date();
         update_time();
     }
 }
@@ -63,12 +48,8 @@ void sleep(int ms){
     while (timer_ticks <= sleep_ticks);
 }
 void datetime_install() {
-    datetime.seconds = 0;
-    datetime.minutes = 0;
-    datetime.hours = 0;
-    datetime.day = 1;
-    datetime.month = 1;
-    datetime.year = 2000;
+    cmos_write(convert_to_binary(convert_from_binary(cmos_read(CMOS_HOURS)) == 23 ? 0 : convert_from_binary(cmos_read(CMOS_HOURS)) + 1), CMOS_HOURS);
+    read_full_date();
 }
 
 void printint_at_date(int a)
@@ -111,6 +92,8 @@ void printstring_at_date(char *txt)
 	}
 }
 void datetime_print(){
+    printstring_at_date(datetime.weekday);
+    printstring_at_date(" ");
     if (datetime.day > 9) printint_at_date(datetime.day);
     else {
         printint_at_date(0);

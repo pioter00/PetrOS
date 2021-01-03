@@ -4,6 +4,7 @@
 #include "../include/terminal.h"
 #include "../include/std.h"
 #include "../include/macros.h"
+#include "../include/cmos.h"
 #include "../include/timer.h"
 #include "../include/keyboard.h"
 
@@ -96,6 +97,14 @@ void _help(){
 		print("%s\n", *(commands + i));
 	}	
 }
+
+int checkdate(int day, int month, int year){
+	if (day == 31 && (month == 2 || month == 4 || month == 6 || month == 9 || month == 11)) return 1;
+	if (day == 30 && month == 2) return 1;
+	if (year % 4 != 0 && month == 2) return 1;
+	return 0;
+}
+
 void _settime(){
 	int day, month, year, hour, minutes, seconds;
 	print("Set day: ");
@@ -112,7 +121,7 @@ void _settime(){
 	} 
 	print("Set year: ");
 	scan("%d", &year);
-	if (year < 1 || year > 3000){
+	if (year < 2000 || year > 3000){
 		print("Invalid value!\n");
 		return;
 	} 
@@ -134,13 +143,12 @@ void _settime(){
 		print("Invalid value!\n");
 		return;
 	}
+	if (checkdate(day, month, year)){
+		print("Invalid value!\n");
+		return;
+	}
 	DISABLE_IRQ
-	datetime.seconds = seconds;
-    datetime.minutes = minutes;
-    datetime.hours = hour;
-    datetime.day = day;
-    datetime.month = month;
-    datetime.year = year;
+	write_full_date(day, month, year % 100, hour, minutes, seconds);
 	ENABLE_IRQ
 }
 uint32_t timer_y = 0, timer_ms = 0;

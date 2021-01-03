@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include "../include/terminal.h"
+#include "../include/commands.h"
 #include "../include/macros.h"
 #include "../include/std.h"
 #include "../include/threads.h"
@@ -44,13 +45,15 @@ void terminal_initialize() {
 	set_bg_col(BLACK);
 	set_fn_col(LIGHT_GREY);
 	main_terminal.color = combine_colors(main_terminal.fncolor, main_terminal.bgcolor);
-	print("\tPetrOS 0.01\t\t\t");
+}
+
+void start_screen(){
+	print("\tPetrOS 0.01\t\t");
     datetime_print();
 	print("\n\n");
 	add_thread((uint32_t)mainloop, "mainloop");
 	ENABLE_IRQ
 }
-
 void add_line(char *line){
 	for (unsigned int i = 0; i <= strlen(line) && i < 256; i++){
 		main_terminal.lines[main_terminal.lines_counter][i] = line[i];

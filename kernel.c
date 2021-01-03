@@ -7,10 +7,13 @@
 #include "include/keyboard.h"
 #include "include/std.h"
 #include "include/timer.h"
+#include "include/cmos.h"
 #include "include/threads.h"
 #include "include/terminal.h"
 #include "include/macros.h"
 #include "include/commands.h"
+
+
 
 void main() 
 {
@@ -23,4 +26,5 @@ void main()
 	keyboard_install();
 	threads_install();
 	terminal_initialize();
+	start_screen();
 }

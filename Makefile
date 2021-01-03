@@ -1,5 +1,5 @@
 OUTFILE := kernel.bin 
-OBJS := start.o kernel.o libs/std.o terminal/terminal.o terminal/commands.o libs/timer.o libs/gdt.o libs/idt.o libs/isr.o libs/irq.o libs/threads.o keyboard/kbd.o keyboard/buffer.o 
+OBJS := start.o kernel.o libs/std.o terminal/terminal.o terminal/commands.o time/timer.o time/cmos.o libs/gdt.o libs/idt.o libs/isr.o libs/irq.o libs/threads.o keyboard/kbd.o keyboard/buffer.o 
 CFLAGS := -O2 -fomit-frame-pointer -fno-builtin -m32 -fno-pie -fno-stack-protector
 
 full:
@@ -19,7 +19,8 @@ comp:
 	gcc keyboard/buffer.c -c -o keyboard/buffer.o $(CFLAGS)
 	gcc terminal/terminal.c -c -o terminal/terminal.o $(CFLAGS)
 	gcc terminal/commands.c -c -o terminal/commands.o $(CFLAGS)
-	gcc libs/timer.c -c -o libs/timer.o $(CFLAGS)
+	gcc time/timer.c -c -o time/timer.o $(CFLAGS)
+	gcc time/cmos.c -c -o time/cmos.o $(CFLAGS)
 	gcc kernel.c -m32 -O2 -fno-pie -fno-stack-protector -fno-builtin -c -o kernel.o
 	ld -Tlinker.ld -o $(OUTFILE) $(OBJS)
 	cp $(OUTFILE) isodir/boot/kernel.bin

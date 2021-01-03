@@ -46,7 +46,8 @@ uint8_t combine_colors(enum colors fg, enum colors bg);
 uint16_t combine_text(unsigned char uc, uint8_t color);
 
 void terminal_initialize();
- 
+void start_screen();
+
 void insert_at(char c, unsigned x, unsigned y);
 
 void add_line(char *line);

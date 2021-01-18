@@ -200,6 +200,36 @@ void _term(void){
 		i++;
 	}
 }
+mutex_t m;
+int32_t var = 0;
+void test_mut(){
+	for (int i = 0;  i < 1000000; i++){
+		for (int j = 0;  j < 1000000; j++){
+			mutex_lock(&m);
+			var++;
+			var++;
+			var++;
+			var++;
+			var++;
+			var++;
+			var++;
+			var++;
+			var++;
+			var++;
+			var--;
+			var--;
+			var--;
+			var--;
+			var--;
+			var--;
+			var--;
+			var--;
+			var--;
+			var--;
+			mutex_unlock(&m);
+		}
+	}
+}
 
 
 int command(char *str) {
@@ -208,6 +238,15 @@ int command(char *str) {
 	if (*str == 0) return 1;
 	else if (*str == 'r' && *(str + 1) == 'u' && *(str + 2) == 'n' && *(str + 3) == 0){
 		_run();
+		return 1;
+	}
+	else if (*str == 'm' && *(str + 1) == 'u' && *(str + 2) == 't' && *(str + 3) == 0){
+		DISABLE_IRQ
+		add_thread((uint32_t)test_mut, "t1");
+		add_thread((uint32_t)test_mut, "t2");
+		ENABLE_IRQ
+		sleep(5000);
+		print("var: %d\n", var);
 		return 1;
 	}
 	else if (*str == 'e' && *(str + 1) == 'c' && *(str + 2) == 'h' && *(str + 3) == 'o' && *(str + 4) == 0){

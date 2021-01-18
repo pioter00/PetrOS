@@ -2,15 +2,10 @@
 #define THREADS_H
 
 #include <stdint.h>
-#include "isr.h"
 
 #define THREAD_STACK_SIZE 4096
 #define THREAD_NUMBER 16
 
-enum mutex_state {
-    RELASED,
-    LOCKED
-};
 
 enum threads_state_t
 {

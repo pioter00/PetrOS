@@ -64,5 +64,5 @@ void irq_handler(struct regs *r) {
     if (handler) handler(r);
     if (r->int_no >= 40) outportb(0xA0, 0x20);
     outportb(0x20, 0x20); 
-    scheduler();
+    if (r->int_no - 32 == 0) scheduler();
 }

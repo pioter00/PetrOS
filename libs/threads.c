@@ -11,7 +11,6 @@
 void threads_install(){
 	threads_control.active_threads = 0;
 	threads_control.thread_index = 0;
-	threads_control.mutex = RELASED;
     for (int i = 0; i < THREAD_NUMBER; i++){
         threads_control.thread[i].state = THREAD_TERMINATED;
         if (i == THREAD_NUMBER - 1) threads_control.thread[i].next_thread_id = 0;
@@ -19,12 +18,24 @@ void threads_install(){
     }
 }
 
-void mutex_lock(){
-	threads_control.mutex = LOCKED;
+void mutex_lock(mutex_t *m){
+    while (!__sync_bool_compare_and_swap(m, 0, 1)){
+        scheduler();
+    }
 }
-void mutex_relase(){
-	threads_control.mutex = RELASED;
+void mutex_unlock(mutex_t *m){
+    *m = 0;
+    scheduler();
 }
+
+void block_scheduler(){
+    DISABLE_IRQ
+}   
+void unlock_scheduler(){
+    ENABLE_IRQ
+    scheduler();
+}
+
 int32_t find_index(){
     for (int i = 0; i < THREAD_NUMBER; i++){
         if (threads_control.thread[i].state == THREAD_TERMINATED) return i;
@@ -80,7 +91,8 @@ void task_switch(struct threads_t *current, struct threads_t *next){
     ENABLE_IRQ
 }
 void scheduler(){
-    if (threads_control.active_threads > 0 && threads_control.mutex == RELASED) {
+    if (threads_control.active_threads > 0) {
+        DISABLE_IRQ
         unsigned temp = threads_control.thread_index;
         unsigned temp1 = threads_control.thread[threads_control.thread_index].next_thread_id;
         if (threads_control.thread[temp1].state == THREAD_TERMINATED){
@@ -88,17 +100,8 @@ void scheduler(){
             temp1 = threads_control.thread[temp1].next_thread_id;
         }
         threads_control.thread_index = temp1;
-        // set_fn_col(MAGENTA);
-        // print("xd");
-        // set_fn_col(LIGHT_GREY);
         task_switch(&threads_control.thread[temp], &threads_control.thread[temp1]);
     }
-    else {
-    // set_fn_col(RED);
-    // print("xd");
-    // set_fn_col(LIGHT_GREY);
-    }
-
 }
 
 void terminate(){

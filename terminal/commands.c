@@ -127,19 +127,19 @@ void _settime(){
 	} 
 	print("Set hour: ");
 	scan("%d", &hour);
-	if (hour < 0 || hour > 24){
+	if (hour < 0 || hour > 23){
 		print("Invalid value!\n");
 		return;
 	} 
 	print("Set minutes: ");
 	scan("%d", &minutes);
-	if (minutes < 0 || minutes > 60){
+	if (minutes < 0 || minutes > 59){
 		print("Invalid value!\n");
 		return;
 	} 
 	print("Set seconds: ");
 	scan("%d", &seconds);
-	if (seconds < 0 || seconds > 60){
+	if (seconds < 0 || seconds > 59){
 		print("Invalid value!\n");
 		return;
 	}
@@ -155,11 +155,11 @@ uint32_t timer_y = 0, timer_ms = 0;
 
 void _timer(void){
 	int timer_tick2 = 0;
-	mutex_lock();
+	DISABLE_IRQ
 	uint32_t y = timer_y, ms = timer_ms;
-	mutex_relase();
+	ENABLE_IRQ
 	while (1){
-		mutex_lock();
+		block_scheduler();
 		int temp_y = main_terminal.row;
 		int temp_x = main_terminal.column;
 		main_terminal.row = y;
@@ -167,7 +167,8 @@ void _timer(void){
 		printint_at_date(timer_tick2++);
 		main_terminal.row = temp_y;
 		main_terminal.column = temp_x;
-		mutex_relase();
+		m = 0;
+		unlock_scheduler();
 		sleep(ms);
 	}
 }
@@ -179,12 +180,14 @@ void _kill(uint32_t id){
 }
 void _term(void){
 	int timer_tick2 = 0;
-	mutex_lock();
+	
+	DISABLE_IRQ
 	uint32_t y = timer_y, ms = timer_ms;
-	mutex_relase();
+	ENABLE_IRQ
+
 	int i = 0;
 	while (i < y){
-		mutex_lock();
+		block_scheduler();
 		int temp_y = main_terminal.row;
 		int temp_x = main_terminal.column;
 		main_terminal.row = y;
@@ -192,11 +195,12 @@ void _term(void){
 		printint_at_date(timer_tick2++);
 		main_terminal.row = temp_y;
 		main_terminal.column = temp_x;
-		mutex_relase();
+		unlock_scheduler();
 		sleep(ms);
 		i++;
 	}
 }
+
 
 int command(char *str) {
 	flush();
@@ -253,7 +257,7 @@ int command(char *str) {
 		int y = 0;
 		int ms = 0;
 		print("Set y: ");
-		if (!scan("%d", &y) || y < 0 || y >= 25){
+		if (!scan("%d", &y) || y < 1 || y >= 25){
 			print("Invalid value!\n");
 			return 1;
 		} 

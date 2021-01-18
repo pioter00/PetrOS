@@ -489,6 +489,8 @@ switch_stacks:
 	sti
 
     ret
+
+
 SECTION .bss
     resb 8192
 _sys_stack:

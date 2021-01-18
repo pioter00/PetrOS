@@ -45,7 +45,7 @@ void timer_install()
 
 void sleep(int ms){
 	unsigned long sleep_ticks = timer_ticks + ms / (1000 / FREQ);
-    while (timer_ticks <= sleep_ticks);
+    while (timer_ticks < sleep_ticks);
 }
 void datetime_install() {
     cmos_write(convert_to_binary(convert_from_binary(cmos_read(CMOS_HOURS)) == 23 ? 0 : convert_from_binary(cmos_read(CMOS_HOURS)) + 1), CMOS_HOURS);
@@ -92,6 +92,7 @@ void printstring_at_date(char *txt)
 	}
 }
 void datetime_print(){
+    printstring_at_date("     ");
     printstring_at_date(datetime.weekday);
     printstring_at_date(" ");
     if (datetime.day > 9) printint_at_date(datetime.day);

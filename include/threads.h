@@ -45,15 +45,16 @@ struct threads_control_t {
     uint32_t stacks[THREAD_NUMBER][THREAD_STACK_SIZE];
     uint8_t active_threads;
     uint8_t thread_index;
-    enum mutex_state mutex;
 } threads_control;
 
 void threads_install();
 void scheduler();
-void mutex_lock();
-void mutex_relase();
+typedef uint8_t mutex_t;
+mutex_t m;
+void mutex_lock(mutex_t *m);
+void mutex_unlock(mutex_t *m);
 
-
-
+void block_scheduler();
+void unlock_scheduler();
 
 #endif

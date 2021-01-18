@@ -57,17 +57,12 @@ void irq_install()
     idt_set_gate(46, (unsigned)irq14, 0x08, 0x8E);
     idt_set_gate(47, (unsigned)irq15, 0x08, 0x8E);
 }
+
 void irq_handler(struct regs *r) {
     void (*handler)(struct regs *r);
     handler = irq_routines[r->int_no - 32];
-    if (handler)
-    {
-        handler(r);
-    }
-    if (r->int_no >= 40)
-    {
-        outportb(0xA0, 0x20);
-    }
-    outportb(0x20, 0x20);
+    if (handler) handler(r);
+    if (r->int_no >= 40) outportb(0xA0, 0x20);
+    outportb(0x20, 0x20); 
     scheduler();
 }

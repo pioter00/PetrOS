@@ -126,14 +126,6 @@ void keyboard_handler(struct regs *r) {
           if (shift_key_map[scancode]) buf_putch(shift_key_map[scancode]);
           return;
       }
-      // if (keyboard.ctrl_flag == 1 && key_map[scancode] == 'l'){
-      //   mutex_lock();
-      //   return;
-      // }
-      // if (keyboard.ctrl_flag == 1 && key_map[scancode] == 'r'){
-      //   mutex_relase();
-      //   return;
-      // }
       else {
         kbd_putchar(key_map[scancode]);
         if (key_map[scancode]) buf_putch(key_map[scancode]);
